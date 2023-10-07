@@ -113,6 +113,18 @@ TextureImporter:
     overridden: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -125,7 +137,7 @@ TextureImporter:
         width: 43
         height: 37
       alignment: 9
-      pivot: {x: 0.32, y: 0.44}
+      pivot: {x: 0.25581396, y: 0.44}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -146,7 +158,7 @@ TextureImporter:
         width: 43
         height: 37
       alignment: 9
-      pivot: {x: 0.32, y: 0.44}
+      pivot: {x: 0.25581396, y: 0.44}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -167,7 +179,7 @@ TextureImporter:
         width: 43
         height: 37
       alignment: 9
-      pivot: {x: 0.32, y: 0.44}
+      pivot: {x: 0.25581396, y: 0.44}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -188,7 +200,7 @@ TextureImporter:
         width: 43
         height: 37
       alignment: 9
-      pivot: {x: 0.32, y: 0.44}
+      pivot: {x: 0.25581396, y: 0.44}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -209,7 +221,7 @@ TextureImporter:
         width: 43
         height: 37
       alignment: 9
-      pivot: {x: 0.32, y: 0.44}
+      pivot: {x: 0.25581396, y: 0.44}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -230,7 +242,7 @@ TextureImporter:
         width: 43
         height: 37
       alignment: 9
-      pivot: {x: 0.32, y: 0.44}
+      pivot: {x: 0.25581396, y: 0.44}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -251,7 +263,7 @@ TextureImporter:
         width: 43
         height: 37
       alignment: 9
-      pivot: {x: 0.32, y: 0.44}
+      pivot: {x: 0.25581396, y: 0.44}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -272,7 +284,7 @@ TextureImporter:
         width: 43
         height: 37
       alignment: 9
-      pivot: {x: 0.32, y: 0.44}
+      pivot: {x: 0.25581396, y: 0.44}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -293,7 +305,7 @@ TextureImporter:
         width: 43
         height: 37
       alignment: 9
-      pivot: {x: 0.32, y: 0.44}
+      pivot: {x: 0.25581396, y: 0.44}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -314,7 +326,7 @@ TextureImporter:
         width: 43
         height: 37
       alignment: 9
-      pivot: {x: 0.32, y: 0.44}
+      pivot: {x: 0.25581396, y: 0.44}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -335,7 +347,7 @@ TextureImporter:
         width: 43
         height: 37
       alignment: 9
-      pivot: {x: 0.32, y: 0.44}
+      pivot: {x: 0.25581396, y: 0.44}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -356,7 +368,7 @@ TextureImporter:
         width: 43
         height: 37
       alignment: 9
-      pivot: {x: 0.32, y: 0.44}
+      pivot: {x: 0.25581396, y: 0.44}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -377,7 +389,7 @@ TextureImporter:
         width: 43
         height: 37
       alignment: 9
-      pivot: {x: 0.32, y: 0.44}
+      pivot: {x: 0.25581396, y: 0.44}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -398,7 +410,7 @@ TextureImporter:
         width: 43
         height: 37
       alignment: 9
-      pivot: {x: 0.32, y: 0.44}
+      pivot: {x: 0.25581396, y: 0.44}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -419,7 +431,7 @@ TextureImporter:
         width: 43
         height: 37
       alignment: 9
-      pivot: {x: 0.32, y: 0.44}
+      pivot: {x: 0.25581396, y: 0.44}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -440,7 +452,7 @@ TextureImporter:
         width: 43
         height: 37
       alignment: 9
-      pivot: {x: 0.32, y: 0.44}
+      pivot: {x: 0.25581396, y: 0.44}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -461,7 +473,7 @@ TextureImporter:
         width: 43
         height: 37
       alignment: 9
-      pivot: {x: 0.32, y: 0.44}
+      pivot: {x: 0.25581396, y: 0.44}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -482,7 +494,7 @@ TextureImporter:
         width: 43
         height: 37
       alignment: 9
-      pivot: {x: 0.32, y: 0.44}
+      pivot: {x: 0.25581396, y: 0.44}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -505,24 +517,24 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Skeleton Attack_15: 2145530206
-      Skeleton Attack_16: 987642772
       Skeleton Attack_0: -862072993
-      Skeleton Attack_10: 768936061
       Skeleton Attack_1: 111903536
-      Skeleton Attack_2: -2055602260
-      Skeleton Attack_8: 496356037
-      Skeleton Attack_14: -1558267337
-      Skeleton Attack_17: -583450777
+      Skeleton Attack_10: 768936061
+      Skeleton Attack_11: -1865620554
       Skeleton Attack_12: 1190190328
       Skeleton Attack_13: 946315996
-      Skeleton Attack_5: 1364081774
-      Skeleton Attack_4: 1537726011
-      Skeleton Attack_7: 1271217771
-      Skeleton Attack_11: -1865620554
-      Skeleton Attack_6: 1526894858
-      Skeleton Attack_9: -616826033
+      Skeleton Attack_14: -1558267337
+      Skeleton Attack_15: 2145530206
+      Skeleton Attack_16: 987642772
+      Skeleton Attack_17: -583450777
+      Skeleton Attack_2: -2055602260
       Skeleton Attack_3: 764298264
+      Skeleton Attack_4: 1537726011
+      Skeleton Attack_5: 1364081774
+      Skeleton Attack_6: 1526894858
+      Skeleton Attack_7: 1271217771
+      Skeleton Attack_8: 496356037
+      Skeleton Attack_9: -616826033
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

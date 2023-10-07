@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerWallHopState : PlayerAirState
 {
-    public PlayerWallHopState(Player player, PlayerStateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
+    public PlayerWallHopState(Player player, StateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
     {
     }
 
@@ -14,7 +14,7 @@ public class PlayerWallHopState : PlayerAirState
 
         stateTimer = player.wallHopTime;
 
-        rb.velocity = new Vector2(-player.transform.right.x * player.wallHopForce, player.wallHopForce);
+        player.rb.velocity = new Vector2(-player.transform.right.x * player.wallHopForce, player.wallHopForce);
     }
 
     public override void Exit()

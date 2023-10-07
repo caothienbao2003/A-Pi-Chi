@@ -5,7 +5,6 @@ using UnityEngine;
 public class Player : Entity
 {
     #region State
-    private PlayerStateMachine stateMachine;
     public PlayerGroundedState groundedState { get; private set; }
     public PlayerIdleState idleState { get; private set; }
     public PlayerMoveState moveState { get; private set; }
@@ -16,11 +15,6 @@ public class Player : Entity
     public PlayerWallJumpState wallJumpState { get; private set; }
     public PlayerWallHopState wallHopState { get; private set; }
     public PlayerPrimaryAttackState primaryAttackState { get; private set; }
-    #endregion
-
-    #region Component
-    public Animator anim { get; private set; }
-    public Rigidbody2D rb { get; private set; }
     #endregion
 
     #region Reference
@@ -38,14 +32,6 @@ public class Player : Entity
     public float movementForceInAir;
     public float airDragMultiplier;
     [SerializeField] private float jumpHeightMultiplier;
-
-
-    [Header("Collision")]
-    [SerializeField] private Transform groundCheck;
-    [SerializeField] private float groundCheckDistance;
-    [SerializeField] private Transform wallCheck;
-    [SerializeField] private float wallCheckDistance;
-    [SerializeField] private LayerMask groundLayer;
 
     [Header("Dash")]
     public float dashSpeed;
@@ -79,7 +65,7 @@ public class Player : Entity
 
     protected override void Awake()
     {
-        stateMachine = new PlayerStateMachine();
+        base.Awake();
 
         groundedState = new PlayerGroundedState(this, stateMachine, "Grounded");
         idleState = new PlayerIdleState(this, stateMachine, "Idle");
@@ -92,9 +78,6 @@ public class Player : Entity
         wallHopState = new PlayerWallHopState(this, stateMachine, "Jump");
         primaryAttackState = new PlayerPrimaryAttackState(this, stateMachine, "Attack");
 
-        anim = GetComponentInChildren<Animator>();
-        rb = GetComponent<Rigidbody2D>();
-
         gameInput = FindObjectOfType<GameInput>();
         gameInput.OnJumpPress += GameInput_OnJumpPress;
         gameInput.OnJumpRelease += GameInput_OnJumpRelease;
@@ -102,6 +85,31 @@ public class Player : Entity
         gameInput.OnAttackPress += GameInput_OnAttackPress;
     }
 
+    protected override void Start()
+    {
+        base.Start();
+
+        stateMachine.Initialize(idleState);
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+
+        stateMachine.currentState.Update();
+
+        xInput = gameInput.GetXInput();
+        yInput = gameInput.GetYInput();
+    }
+
+    protected override void FixedUpdate()
+    {
+        base.FixedUpdate();
+
+        stateMachine.currentState.FixedUpdate();
+    }
+
+    #region Game Input
     private void GameInput_OnAttackPress(object sender, System.EventArgs e)
     {
         if(stateMachine.currentState != primaryAttackState)
@@ -141,49 +149,7 @@ public class Player : Entity
     {
         rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * jumpHeightMultiplier);
     }
-
-    protected override void Start()
-    {
-        stateMachine.Initialize(idleState);
-    }
-
-    protected override void Update()
-    {
-        stateMachine.currentState.Update();
-
-        xInput = gameInput.GetXInput();
-        yInput = gameInput.GetYInput();
-    }
-
-    protected override void FixedUpdate()
-    {
-        stateMachine.currentState.FixedUpdate();
-    }
-
-    public void SetVelocity(float x, float y)
-    {
-        rb.velocity = new Vector2(x, y);
-        HandleFlip(x);
-    }
-
-    public bool IsGrounded() => Physics2D.CircleCast(groundCheck.position, .2f, Vector2.down, groundCheckDistance, groundLayer);
-
-    public bool IsTouchingWall() => Physics2D.Raycast(wallCheck.position, transform.right, wallCheckDistance, groundLayer);
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawLine(groundCheck.position, new Vector2(groundCheck.position.x, groundCheck.position.y - groundCheckDistance));
-        Gizmos.DrawLine(wallCheck.position, new Vector2(wallCheck.position.x + wallCheckDistance, wallCheck.position.y));
-    }
-
-    public void HandleFlip(float moveX)
-    {
-        if (moveX != 0)
-        {
-            float moveDir = moveX;
-            transform.right = new Vector2(moveDir, 0);
-        }
-    }
+    #endregion
 
     private IEnumerator DashCooldownCo()
     {
@@ -197,7 +163,6 @@ public class Player : Entity
         StartCoroutine(DashCooldownCo());
     }
 
-    public void AnimationTrigger() => stateMachine.currentState.AnimationFinishTrigger();
     
     private IEnumerator BusyForCo(float seconds)
     {

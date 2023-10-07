@@ -9,7 +9,8 @@ public class PlayerPrimaryAttackState : PlayerState
     private float lastTimeAttacked;
     private float maxCombo = 2;
     private float comboTime;
-    public PlayerPrimaryAttackState(Player player, PlayerStateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
+
+    public PlayerPrimaryAttackState(Player player, StateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
     {
     }
 
@@ -47,7 +48,7 @@ public class PlayerPrimaryAttackState : PlayerState
 
         if (stateTimer <= 0)
         {
-            player.SetVelocity(0, rb.velocity.y);
+            player.SetVelocity(0, player.rb.velocity.y);
         }
 
         if (triggerCalled)

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerJumpState : PlayerAirState
 {
-    public PlayerJumpState(Player player, PlayerStateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
+    public PlayerJumpState(Player player, StateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
     {
     }
 
@@ -12,7 +12,7 @@ public class PlayerJumpState : PlayerAirState
     {
         base.Enter();
 
-        rb.AddForce(new Vector2(0, player.jumpForce), ForceMode2D.Impulse);
+        player.rb.AddForce(new Vector2(0, player.jumpForce), ForceMode2D.Impulse);
     }
 
     public override void Exit()
@@ -24,7 +24,7 @@ public class PlayerJumpState : PlayerAirState
     {
         base.Update();
 
-        if(rb.velocity.y <0 && !player.IsTouchingWall())
+        if(player.rb.velocity.y <0 && !player.IsTouchingWall())
         {
             stateMachine.ChangeState(player.fallState);
         }

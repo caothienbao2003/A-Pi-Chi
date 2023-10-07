@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerMoveState : PlayerGroundedState
 {
-    public PlayerMoveState(Player player, PlayerStateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
+    public PlayerMoveState(Player player, StateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
     {
     }
 
@@ -32,6 +32,6 @@ public class PlayerMoveState : PlayerGroundedState
     {
         base.FixedUpdate();
 
-        player.SetVelocity(player.xInput * player.moveSpeed, rb.velocity.y);
+        player.SetVelocity(player.xInput * player.moveSpeed, player.rb.velocity.y);
     }
 }

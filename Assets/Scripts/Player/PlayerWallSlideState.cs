@@ -5,7 +5,8 @@ using UnityEngine;
 public class PlayerWallSlideState : PlayerState
 {
     private float wallSlideHoldTime;
-    public PlayerWallSlideState(Player player, PlayerStateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
+
+    public PlayerWallSlideState(Player player, StateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
     {
     }
 
@@ -27,7 +28,7 @@ public class PlayerWallSlideState : PlayerState
 
         if (player.yInput < 0)
         {
-            player.SetVelocity(0, rb.velocity.y);
+            player.SetVelocity(0, player.rb.velocity.y);
         }
         else
         {

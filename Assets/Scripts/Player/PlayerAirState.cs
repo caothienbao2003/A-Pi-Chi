@@ -5,7 +5,8 @@ using UnityEngine;
 public class PlayerAirState : PlayerState
 {
     private float moveDir = 0;
-    public PlayerAirState(Player player, PlayerStateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
+
+    public PlayerAirState(Player player, StateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
     {
     }
 
@@ -23,7 +24,7 @@ public class PlayerAirState : PlayerState
     {
         base.FixedUpdate();
 
-        rb.AddForce(new Vector2(player.movementForceInAir * player.xInput, 0), ForceMode2D.Force);
+        player.rb.AddForce(new Vector2(player.movementForceInAir * player.xInput, 0), ForceMode2D.Force);
 
         if (player.xInput != 0)
         {
@@ -32,14 +33,14 @@ public class PlayerAirState : PlayerState
 
         if (player.xInput != 0)
         {
-            if (Mathf.Abs(rb.velocity.x) > player.moveSpeed)
+            if (Mathf.Abs(player.rb.velocity.x) > player.moveSpeed)
             {
-                rb.velocity = new Vector2(moveDir * player.moveSpeed, rb.velocity.y);
+                player.rb.velocity = new Vector2(moveDir * player.moveSpeed, player.rb.velocity.y);
             }
         }
         else
         {
-            rb.velocity = new Vector2(rb.velocity.x * player.airDragMultiplier, rb.velocity.y);
+            player.rb.velocity = new Vector2(player.rb.velocity.x * player.airDragMultiplier, player.rb.velocity.y);
         }
     }
 

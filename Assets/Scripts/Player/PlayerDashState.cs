@@ -6,7 +6,8 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 public class PlayerDashState : PlayerState
 {
     private float dashDir;
-    public PlayerDashState(Player player, PlayerStateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
+
+    public PlayerDashState(Player player, StateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
     {
     }
 
@@ -29,7 +30,7 @@ public class PlayerDashState : PlayerState
     {
         base.Exit();
 
-        player.SetVelocity(0, rb.velocity.y);
+        player.SetVelocity(0, player.rb.velocity.y);
         player.DashCooldown();
     }
 
