@@ -4,8 +4,13 @@ using UnityEngine;
 
 public class Entity : MonoBehaviour
 {
-    #region Component
     protected StateMachine stateMachine;
+
+    #region Reference
+    private EntityEffect entityEffect => GetComponentInChildren<EntityEffect>();
+    #endregion
+
+    #region Component
     public Animator anim { get; private set; }
     public Rigidbody2D rb { get; private set; }
     #endregion
@@ -21,6 +26,13 @@ public class Entity : MonoBehaviour
 
     public Transform attackCheck;
     public float attackCheckRadius;
+
+    #endregion
+
+    #region Variables
+    public Vector2 currentKnockBackDir { get; set; }
+    public float currentKnockBackForce { get; set; }
+    public bool canBeStunned { get; set; }
     #endregion
 
     protected virtual void Awake()
@@ -29,7 +41,6 @@ public class Entity : MonoBehaviour
 
         anim = GetComponentInChildren<Animator>();
         rb = GetComponent<Rigidbody2D>();
-
     }
 
     protected virtual void Start()
@@ -38,7 +49,7 @@ public class Entity : MonoBehaviour
 
     protected virtual void Update()
     {
-        
+
     }
 
     protected virtual void FixedUpdate()
@@ -55,10 +66,10 @@ public class Entity : MonoBehaviour
     {
         //Draw Ground Check
         Gizmos.DrawLine(groundCheck.position, new Vector2(groundCheck.position.x, groundCheck.position.y - groundCheckDistance));
-        
+
         //Draw Wall Check
         Gizmos.DrawLine(wallCheck.position, new Vector2(wallCheck.position.x + wallCheckDistance, wallCheck.position.y));
-        
+
         //Draw Attack Check
         Gizmos.DrawWireSphere(attackCheck.position, attackCheckRadius);
     }
@@ -83,13 +94,31 @@ public class Entity : MonoBehaviour
     }
     #endregion
 
-    public virtual void Damage()
-    {
-        Debug.Log(gameObject.name + "was damaged");
-    }
-
     public virtual void AnimationTrigger()
     {
         stateMachine.currentState.AnimationFinishTrigger();
+    }
+
+    public virtual void DealKnockbackTo(Entity entity)
+    {
+        Vector2 knockBackDir = new Vector2(transform.right.x * currentKnockBackDir.x, currentKnockBackDir.y) * currentKnockBackForce;
+        entity.rb.AddForce(knockBackDir, ForceMode2D.Impulse);
+    }
+
+    protected virtual void ChangeAnimationWithDelay(string animBoolName, float time)
+    {
+        StartCoroutine(ChangeAnimationWithDelayCo(animBoolName, time));
+    }
+
+    private IEnumerator ChangeAnimationWithDelayCo(string animBoolName, float time)
+    {
+        anim.SetBool(animBoolName, false);
+        yield return new WaitForSeconds(time);
+        anim.SetBool(animBoolName, true);
+    }
+
+    public virtual void ChangeToHitState()
+    {
+
     }
 }

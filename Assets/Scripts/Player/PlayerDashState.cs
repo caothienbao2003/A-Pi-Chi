@@ -15,7 +15,6 @@ public class PlayerDashState : PlayerState
     {
         base.Enter();
 
-
         stateTimer = player.dashTime;
 
         dashDir = player.xInput;
@@ -24,6 +23,8 @@ public class PlayerDashState : PlayerState
         {
             dashDir = player.transform.right.x;
         }
+
+        SkillManager.instance.cloneSkill.CreateClone(player.transform);
     }
 
     public override void Exit()
@@ -31,7 +32,6 @@ public class PlayerDashState : PlayerState
         base.Exit();
 
         player.SetVelocity(0, player.rb.velocity.y);
-        player.DashCooldown();
     }
 
     public override void Update()

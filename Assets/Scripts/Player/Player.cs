@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class Player : Entity
 {
@@ -15,17 +16,21 @@ public class Player : Entity
     public PlayerWallJumpState wallJumpState { get; private set; }
     public PlayerWallHopState wallHopState { get; private set; }
     public PlayerPrimaryAttackState primaryAttackState { get; private set; }
+    public PlayerHitState hitState { get; private set; }
+    public PlayerGuardState guardState { get; private set; }
+    public PlayerCounterAttackState counterAttackState { get; private set; }
+
     #endregion
 
     #region Reference
     private GameInput gameInput;
     #endregion
-    
+
     #region Parameters
     [Header("Move On Ground")]
     public float moveSpeed;
     public float xInput { get; private set; }
-    public float yInput { get; private set;}
+    public float yInput { get; private set; }
 
     [Header("Move On Air")]
     public float jumpForce;
@@ -36,8 +41,6 @@ public class Player : Entity
     [Header("Dash")]
     public float dashSpeed;
     public float dashTime;
-    [SerializeField] private float dashCoodown;
-    private bool canDash = true;
 
     [Header("Wall Slide")]
     public float wallSlideSpeed = 0.5f;
@@ -57,10 +60,21 @@ public class Player : Entity
     public float comboTime;
     public Vector2[] attackMovements;
 
+    public Vector2[] knockBackAttackDir;
+    public float[] knockBackAttackForce;
+
+    [Header("Counter Attack Info")]
+    public float counterAttackTimer;
+    public LayerMask enemyLayer;
+    public float counterAttackCooldown;
+    public Vector2 counterAttackKnockbackDir;
+    public float counterAttackKnockbackForce;
+
     #endregion
 
     #region Variables
     public bool isBusy { get; private set; }
+    private bool canGuard = true;
     #endregion
 
     protected override void Awake()
@@ -77,13 +91,67 @@ public class Player : Entity
         wallJumpState = new PlayerWallJumpState(this, stateMachine, "Jump");
         wallHopState = new PlayerWallHopState(this, stateMachine, "Jump");
         primaryAttackState = new PlayerPrimaryAttackState(this, stateMachine, "Attack");
+        hitState = new PlayerHitState(this, stateMachine, "Hit");
+        guardState = new PlayerGuardState(this, stateMachine, "Guard");
+        counterAttackState = new PlayerCounterAttackState(this, stateMachine, "CounterAttack");
 
-        gameInput = FindObjectOfType<GameInput>();
+        gameInput = GameInput.instance;
         gameInput.OnJumpPress += GameInput_OnJumpPress;
         gameInput.OnJumpRelease += GameInput_OnJumpRelease;
         gameInput.OnDashPress += GameInput_OnDashPress;
         gameInput.OnAttackPress += GameInput_OnAttackPress;
+        gameInput.OnGuardPress += GameInput_OnGuardPress;
     }
+
+    #region GameInput
+    private void GameInput_OnAttackPress(object sender, System.EventArgs e)
+    {
+        if (stateMachine.currentState != primaryAttackState && stateMachine.currentState != hitState)
+        {
+            stateMachine.ChangeState(primaryAttackState);
+        }
+    }
+
+    private void GameInput_OnDashPress(object sender, System.EventArgs e)
+    {
+        if (stateMachine.currentState != dashState && stateMachine.currentState != wallSlideState && SkillManager.instance.dashSkill.CanUseSkill())
+        {
+            stateMachine.ChangeState(dashState);
+        }
+    }
+
+    private void GameInput_OnJumpPress(object sender, System.EventArgs e)
+    {
+        if (IsGrounded() && stateMachine.currentState != dashState)
+        {
+            stateMachine.ChangeState(jumpState);
+        }
+        if (stateMachine.currentState == wallSlideState)
+        {
+            if (xInput == 0)
+            {
+                stateMachine.ChangeState(wallHopState);
+            }
+            else if (xInput != transform.right.x)
+            {
+                stateMachine.ChangeState(wallJumpState);
+            }
+        }
+    }
+
+    private void GameInput_OnJumpRelease(object sender, System.EventArgs e)
+    {
+        rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * jumpHeightMultiplier);
+    }
+    private void GameInput_OnGuardPress(object sender, System.EventArgs e)
+    {
+        if (stateMachine.currentState != guardState && stateMachine.currentState != counterAttackState && stateMachine.currentState != hitState && canGuard)
+        {
+            stateMachine.ChangeState(guardState);
+        }
+    }
+
+    #endregion
 
     protected override void Start()
     {
@@ -109,61 +177,24 @@ public class Player : Entity
         stateMachine.currentState.FixedUpdate();
     }
 
-    #region Game Input
-    private void GameInput_OnAttackPress(object sender, System.EventArgs e)
+
+    #region CoolDown
+
+    private IEnumerator GuardCoolDownCo()
     {
-        if(stateMachine.currentState != primaryAttackState)
-        {
-            stateMachine.ChangeState(primaryAttackState);
-        }
+        canGuard = false;
+        yield return new WaitForSeconds(counterAttackCooldown);
+        canGuard = true;
     }
 
-    private void GameInput_OnDashPress(object sender, System.EventArgs e)
+    public void GuardCoolDown()
     {
-        if(stateMachine.currentState != dashState && stateMachine.currentState != wallSlideState && canDash)
-        {
-            stateMachine.ChangeState(dashState);
-        }
+        StartCoroutine(GuardCoolDownCo());
     }
 
-    private void GameInput_OnJumpPress(object sender, System.EventArgs e)
-    {
-        if (IsGrounded() && stateMachine.currentState != dashState)
-        {
-            stateMachine.ChangeState(jumpState);
-        }
-        if(stateMachine.currentState == wallSlideState)
-        {
-            if(xInput == 0)
-            {
-                stateMachine.ChangeState(wallHopState);
-            }
-            else if(xInput != transform.right.x)
-            {
-                stateMachine.ChangeState(wallJumpState);
-            }
-        }
-    }
-
-    private void GameInput_OnJumpRelease(object sender, System.EventArgs e)
-    {
-        rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * jumpHeightMultiplier);
-    }
     #endregion
 
-    private IEnumerator DashCooldownCo()
-    {
-        canDash = false;
-        yield return new WaitForSeconds(dashCoodown);
-        canDash = true;
-    }
-
-    public void DashCooldown()
-    {
-        StartCoroutine(DashCooldownCo());
-    }
-
-    
+    #region Busy
     private IEnumerator BusyForCo(float seconds)
     {
         isBusy = true;
@@ -175,4 +206,21 @@ public class Player : Entity
     {
         StartCoroutine(BusyForCo(seconds));
     }
+    #endregion
+
+    #region ChangeState
+    public override void ChangeToHitState()
+    {
+        base.ChangeToHitState();
+
+        stateMachine.ChangeState(hitState);
+    }
+    #endregion
+
+    #region Detect Enemy
+    public Collider2D[] EnemiesDectected()
+    {
+        return Physics2D.OverlapCircleAll(attackCheck.position, attackCheckRadius, enemyLayer);
+    }
+    #endregion
 }

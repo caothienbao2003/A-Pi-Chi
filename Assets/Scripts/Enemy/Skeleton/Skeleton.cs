@@ -10,6 +10,8 @@ public class Skeleton : Enemy
     public SkeletonReactState reactState { get; private set; }
     public SkeletonBattleState battleState { get; private set; }
     public SkeletonAttackState attackState { get; private set; }
+    public SkeletonHitState hitState { get; private set; }
+    public SkeletonStunState stunState { get; private set; }
     #endregion
 
     protected override void Awake()
@@ -21,6 +23,8 @@ public class Skeleton : Enemy
         reactState = new SkeletonReactState(this, stateMachine, "React");
         battleState = new SkeletonBattleState(this, stateMachine, "Walk");
         attackState = new SkeletonAttackState(this, stateMachine, "Attack");
+        hitState = new SkeletonHitState(this, stateMachine, "Hit");
+        stunState = new SkeletonStunState(this, stateMachine, "Stun");
 
         stateMachine.Initialize(idleState);
     }
@@ -40,5 +44,22 @@ public class Skeleton : Enemy
     protected override void Update()
     {
         base.Update();
+    }
+
+    public override void ChangeToHitState()
+    {
+        if(stateMachine.currentState == hitState)
+        {
+            ChangeAnimationWithDelay(hitState.animBoolName, 0.05f);
+        }
+        else
+        {
+            stateMachine.ChangeState(hitState);
+        }
+    }
+
+    public override void ChangeToStunState()
+    {
+        stateMachine.ChangeState(stunState);
     }
 }

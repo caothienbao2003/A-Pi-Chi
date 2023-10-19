@@ -4,16 +4,16 @@ using UnityEngine;
 
 public class EntityAnimationTrigger : MonoBehaviour
 {
-    private Entity entity => GetComponentInParent<Entity>();
+    protected Entity entity => GetComponentInParent<Entity>();
 
-    [SerializeField] private LayerMask attackLayerMask;
+    [SerializeField] protected LayerMask attackLayerMask;
 
-    private void AnimationTrigger()
+    protected virtual void AnimationTrigger()
     {
         entity.AnimationTrigger();
     }
 
-    private void AttackTrigger()
+    protected virtual void AttackTrigger()
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(entity.attackCheck.position,entity.attackCheckRadius, attackLayerMask);
         
@@ -21,7 +21,11 @@ public class EntityAnimationTrigger : MonoBehaviour
         {
             if(hit.GetComponent<Entity>() != null)
             {
-                hit.GetComponent<Entity>().Damage();
+                Entity attackedEntity = hit.GetComponent<Entity>();
+                Entity attackingEntity = GetComponentInParent<Entity>();
+                
+                attackedEntity.ChangeToHitState();
+                attackingEntity.DealKnockbackTo(attackedEntity);
             }
         }
     }

@@ -24,4 +24,11 @@ public class SkeletonAttackState : SkeletonState
             stateMachine.ChangeState(skeleton.battleState);
         }
     }
+
+    public override void Exit()
+    {
+        base.Exit();
+
+        skeleton.CannotBeStuned();
+    }
 }

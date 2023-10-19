@@ -27,6 +27,9 @@ public class PlayerPrimaryAttackState : PlayerState
             comboCounter = 0;
         }
 
+        player.currentKnockBackDir = player.knockBackAttackDir[comboCounter];
+        player.currentKnockBackForce = player.knockBackAttackForce[comboCounter];
+
         player.anim.SetInteger("ComboCounter", comboCounter);
 
         player.SetVelocity(player.attackMovements[comboCounter].x * player.transform.right.x, player.attackMovements[comboCounter].y);

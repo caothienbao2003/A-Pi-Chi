@@ -6,7 +6,7 @@ public class State
 {
     protected Entity entity;
     protected StateMachine stateMachine;
-    private string animBoolName;
+    public string animBoolName { get; protected set; }
 
     protected float stateTimer;
     protected bool triggerCalled;

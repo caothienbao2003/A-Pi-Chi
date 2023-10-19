@@ -49,7 +49,7 @@ public class PlayerAirState : PlayerState
         base.Update();
         player.HandleFlip(player.xInput);
 
-        if (player.IsTouchingWall() && stateMachine.currentState != player.wallHopState)
+        if (player.IsTouchingWall() && !player.IsGrounded() && player.xInput != 0 && stateMachine.currentState != player.wallHopState)
         {
             stateMachine.ChangeState(player.wallSlideState);
         }

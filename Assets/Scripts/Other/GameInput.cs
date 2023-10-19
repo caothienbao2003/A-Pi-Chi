@@ -10,9 +10,14 @@ public class GameInput : MonoBehaviour
     public event EventHandler OnJumpRelease;
     public event EventHandler OnDashPress;
     public event EventHandler OnAttackPress;
+    public event EventHandler OnGuardPress;
+
+    public static GameInput instance;
 
     private void Awake()
     {
+        instance = this;
+
         gameInputActions = new GameInputActions();
         gameInputActions.Player.Enable();
 
@@ -20,6 +25,12 @@ public class GameInput : MonoBehaviour
         gameInputActions.Player.Jump.canceled += Jump_canceled;
         gameInputActions.Player.Dash.performed += Dash_performed;
         gameInputActions.Player.Attack.performed += Attack_performed;
+        gameInputActions.Player.Guard.performed += Guard_performed;
+    }
+
+    private void Guard_performed(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+    {
+        OnGuardPress?.Invoke(this, EventArgs.Empty);
     }
 
     private void Jump_canceled(UnityEngine.InputSystem.InputAction.CallbackContext obj)
