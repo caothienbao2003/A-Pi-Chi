@@ -11,19 +11,25 @@ public class UltimateButton : InputButton
     private Player player;
     private bool isObjectsActive = true;
     private GameInput gameInput;
+    private UltimateSkill ultimateSkill;
 
 
     private void Start()
     {
         player = PlayerManager.instance.player;
         gameInput = GameInput.instance;
-
-        gameInput.OnUltimateSkillPress += GameInput_OnUltimateSkillPress;
+        ultimateSkill = SkillManager.instance.ultimateSkill;
     }
 
-    private void GameInput_OnUltimateSkillPress(object sender, EventArgs e)
-    { 
-        isObjectsActive = !isObjectsActive;
-        SetActiveButtons(isObjectsActive);
+    private void Update()
+    {
+        if(ultimateSkill.IsUsingSkill())
+        {
+            SetActiveButtons(false);
+        }
+        else
+        {
+            SetActiveButtons(true);
+        }
     }
 }

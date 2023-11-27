@@ -80,6 +80,7 @@ public class Blackhole : MonoBehaviour
         if (blackholeTimer <= 0)
         {
             state = BlackholeState.Skrink;
+            canExitBlackhole = true;
         }
 
         HandleGrowAndSkrink();
@@ -96,8 +97,7 @@ public class Blackhole : MonoBehaviour
                 transform.localScale = Vector2.Lerp(transform.localScale, new Vector2(0, 0), skrinkSpeed * Time.deltaTime);
                 if (transform.localScale.x <= 0.1f)
                 {
-                    canExitBlackhole = true;
-                    Destroy(gameObject);
+                    Destroy(gameObject, .1f);
                 }
                 break;
         }
@@ -137,7 +137,6 @@ public class Blackhole : MonoBehaviour
 
     public void SkrinkBlackhole()
     {
-        Debug.Log("Skrink");
         state = BlackholeState.Skrink;
     }
 }

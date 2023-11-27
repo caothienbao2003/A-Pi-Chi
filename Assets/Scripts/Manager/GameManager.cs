@@ -24,9 +24,4 @@ public class GameManager : MonoBehaviour
             instance = this;
         }
     }
-
-    private void Start()
-    {
-        Cursor.visible = false;
-    }
 }

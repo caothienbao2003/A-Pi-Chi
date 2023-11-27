@@ -25,6 +25,7 @@ public class UltimateSkill : Skill
     private Blackhole currentBlackhole;
     private bool isCancelBlackhole = false;
     private GameInput gameInput;
+    public bool isUsingSKill { get; set; }
 
     private void Start()
     {
@@ -39,8 +40,6 @@ public class UltimateSkill : Skill
             CancelBlackhole();
         }
         isCancelBlackhole = !isCancelBlackhole;
-        Debug.Log(isCancelBlackhole);
-
     }
 
     public override void UseSkill()
@@ -68,7 +67,6 @@ public class UltimateSkill : Skill
         if (currentBlackhole.canExitBlackhole)
         {
             currentBlackhole.SkrinkBlackhole();
-            currentBlackhole = null;
             return true;
         }
 
@@ -77,12 +75,15 @@ public class UltimateSkill : Skill
 
     private void CancelBlackhole()
     {
-        Debug.Log("Cancel");
         if (currentBlackhole != null)
         {
             currentBlackhole.SkrinkBlackhole();
-            currentBlackhole.canExitBlackhole = false;
-            currentBlackhole = null;
+            currentBlackhole.canExitBlackhole = true;
         }
+    }
+
+    public bool IsUsingSkill()
+    {
+        return isUsingSKill;
     }
 }

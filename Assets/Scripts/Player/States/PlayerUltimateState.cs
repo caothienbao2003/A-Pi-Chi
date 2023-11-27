@@ -7,7 +7,6 @@ public class PlayerUltimateState : PlayerState
     private UltimateSkill ultimateSkill;
     private float flyTimer;
     private float flySpeed;
-    private bool isSkillUsed = false;
     private float defaultGravityScale;
     public PlayerUltimateState(Player player, StateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
     {
@@ -19,12 +18,12 @@ public class PlayerUltimateState : PlayerState
 
         ultimateSkill = SkillManager.instance.ultimateSkill;
 
-        isSkillUsed = false;
+        ultimateSkill.isUsingSKill = true;
 
         flyTimer = ultimateSkill.flyTime;
         flySpeed = ultimateSkill.flySpeed;
 
-        stateTimer = flyTimer + ultimateSkill.blackholeExistTime + 0.1f;
+        stateTimer = flyTimer + ultimateSkill.blackholeExistTime;
 
         defaultGravityScale = player.rb.gravityScale;
 
@@ -36,6 +35,7 @@ public class PlayerUltimateState : PlayerState
         base.Exit();
 
         player.rb.gravityScale = defaultGravityScale;
+        ultimateSkill.isUsingSKill = false;
     }
 
     public override void FixedUpdate()
@@ -49,12 +49,8 @@ public class PlayerUltimateState : PlayerState
         else
         {
             player.rb.velocity = new Vector2(0, -.1f);
+            ultimateSkill.UseSkill();
 
-            if (!isSkillUsed)
-            {
-                ultimateSkill.UseSkill();
-                isSkillUsed = true;
-            }
         }
     }
 
