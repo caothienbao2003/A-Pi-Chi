@@ -12,17 +12,12 @@ public class SkeletonAttackState : SkeletonState
     {
         base.Enter();
 
-        skeleton.HandleFlip(skeleton.IsDetectingPlayer().transform.position.x - skeleton.transform.position.x);
+        skeleton.FaceTo(skeleton.IsDetectingPlayer().transform.position.x - skeleton.transform.position.x);
     }
 
     public override void Update()
     {
         base.Update();
-
-        if(triggerCalled)
-        {
-            stateMachine.ChangeState(skeleton.battleState);
-        }
     }
 
     public override void Exit()
@@ -30,5 +25,13 @@ public class SkeletonAttackState : SkeletonState
         base.Exit();
 
         skeleton.CannotBeStuned();
+    }
+
+    public override void WhenFinishAnimation()
+    {
+        base.WhenFinishAnimation();
+
+        stateMachine.ChangeState(skeleton.battleState);
+
     }
 }

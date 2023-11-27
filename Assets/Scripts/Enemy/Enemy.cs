@@ -26,6 +26,9 @@ public class Enemy : Entity
     public float stunTimer;
     #endregion
 
+    private float defaultMoveSpeed;
+    public bool isEffectedByUltimate { get; set; }
+
     protected override void Awake()
     {
         base.Awake();
@@ -37,6 +40,8 @@ public class Enemy : Entity
         base.Start();
 
         stateMachine.currentState.Enter();
+
+        defaultMoveSpeed = moveSpeed;
     }
 
     protected override void Update()
@@ -68,6 +73,7 @@ public class Enemy : Entity
     }
     #endregion
 
+    #region Stun
     public virtual void ChangeToStunState()
     {
 
@@ -81,5 +87,36 @@ public class Enemy : Entity
     public virtual void CannotBeStuned()
     {
         canBeStunned = false;
+    }
+    #endregion
+
+    public void FreezeTime(bool isFreeze)
+    {
+        if (isFreeze)
+        {
+            moveSpeed = 0;
+            anim.speed = 0;
+            rb.constraints = RigidbodyConstraints2D.FreezeAll;
+        }
+        else
+        {
+            moveSpeed = defaultMoveSpeed;
+            anim.speed = 1;
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        }
+    }
+
+    private IEnumerator FreezeTimeCo(float seconds)
+    {
+        FreezeTime(true);
+
+        yield return new WaitForSeconds(seconds);
+
+        FreezeTime(false);
+    }
+
+    public void FreezeTimeFor(float seconds)
+    {
+        StartCoroutine(FreezeTimeCo(seconds));
     }
 }

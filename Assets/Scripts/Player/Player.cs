@@ -19,11 +19,16 @@ public class Player : Entity
     public PlayerHitState hitState { get; private set; }
     public PlayerGuardState guardState { get; private set; }
     public PlayerCounterAttackState counterAttackState { get; private set; }
-
+    public PlayerAimSwordState aimSwordState { get; private set; }
+    public PlayerWaitSwordState waitSwordState { get; private set; }
+    public PlayerThrowSwordState throwSwordState { get; private set; }
+    public PlayerCatchSwordState catchSwordState { get; private set; }
+    public PlayerUltimateState ultimateState { get; private set; }
     #endregion
 
     #region Reference
     private GameInput gameInput;
+    private SkillManager skillManager;
     #endregion
 
     #region Parameters
@@ -37,6 +42,10 @@ public class Player : Entity
     public float movementForceInAir;
     public float airDragMultiplier;
     [SerializeField] private float jumpHeightMultiplier;
+    [SerializeField] private float coyoteTime = .2f;
+    [SerializeField] private float maxFallSpeed;
+
+    private float coyoteTimeCounter;
 
     [Header("Dash")]
     public float dashSpeed;
@@ -59,23 +68,32 @@ public class Player : Entity
     [Header("Attack")]
     public float comboTime;
     public Vector2[] attackMovements;
-
     public Vector2[] knockBackAttackDir;
     public float[] knockBackAttackForce;
 
     [Header("Counter Attack Info")]
     public float counterAttackTimer;
-    public LayerMask enemyLayer;
     public float counterAttackCooldown;
     public Vector2 counterAttackKnockbackDir;
     public float counterAttackKnockbackForce;
 
+    [Header("Sword Skill")]
+    public float cancelAimInputRange = .3f;
+    public Vector2 cancelAimInputArea { get; set; }
+    public Vector2 aimSwordDirectionInput { get; set; }
+
+    private LayerMask enemyLayer;
     #endregion
 
     #region Variables
     public bool isBusy { get; private set; }
     private bool canGuard = true;
+    public bool isHoldingAttackButton { get; set; }
     #endregion
+
+    [SerializeField] private GameObject moveButton;
+    [SerializeField] private GameObject skillButton;
+
 
     protected override void Awake()
     {
@@ -94,39 +112,107 @@ public class Player : Entity
         hitState = new PlayerHitState(this, stateMachine, "Hit");
         guardState = new PlayerGuardState(this, stateMachine, "Guard");
         counterAttackState = new PlayerCounterAttackState(this, stateMachine, "CounterAttack");
-
-        gameInput = GameInput.instance;
-        gameInput.OnJumpPress += GameInput_OnJumpPress;
-        gameInput.OnJumpRelease += GameInput_OnJumpRelease;
-        gameInput.OnDashPress += GameInput_OnDashPress;
-        gameInput.OnAttackPress += GameInput_OnAttackPress;
-        gameInput.OnGuardPress += GameInput_OnGuardPress;
+        aimSwordState = new PlayerAimSwordState(this, stateMachine, "AimSword");
+        throwSwordState = new PlayerThrowSwordState(this, stateMachine, "ThrowSword");
+        waitSwordState = new PlayerWaitSwordState(this, stateMachine, "WaitSword");
+        catchSwordState = new PlayerCatchSwordState(this, stateMachine, "CatchSword");
+        ultimateState = new PlayerUltimateState(this, stateMachine, "Fall");
     }
+
 
     #region GameInput
+    private void GameInput_OnSwordSkillPress(object sender, System.EventArgs e)
+    {
+        if (IsCurrentStateEqualTo(primaryAttackState)
+            || IsCurrentStateEqualTo(aimSwordState)
+            || IsCurrentStateEqualTo(throwSwordState)
+            || IsCurrentStateEqualTo(catchSwordState)
+            || IsCurrentStateEqualTo(waitSwordState))
+        {
+            return;
+        }
+
+        if (!SkillManager.instance.swordSkill.IsAllSwordThrown())
+        {
+            aimSwordDirectionInput = Vector2.zero;
+            stateMachine.ChangeState(aimSwordState);
+        }
+        else
+        {
+            stateMachine.ChangeState(waitSwordState);
+        }
+
+    }
+    private void GameInput_OnSwordSkillRelease(object sender, System.EventArgs e)
+    {
+        if (IsCurrentStateEqualTo(aimSwordState))
+        {
+            if (IsAimInputInCancelRange())
+            {
+                stateMachine.ChangeState(catchSwordState);
+            }
+            else
+            {
+                stateMachine.ChangeState(throwSwordState);
+            }
+        }
+    }
     private void GameInput_OnAttackPress(object sender, System.EventArgs e)
     {
-        if (stateMachine.currentState != primaryAttackState && stateMachine.currentState != hitState)
-        {
-            stateMachine.ChangeState(primaryAttackState);
-        }
-    }
+        isHoldingAttackButton = true;
 
+        if (IsCurrentStateEqualTo(primaryAttackState)
+            || IsCurrentStateEqualTo(hitState)
+            || IsCurrentStateEqualTo(catchSwordState)
+            || IsCurrentStateEqualTo(throwSwordState)
+            || IsCurrentStateEqualTo(waitSwordState))
+        {
+            return;
+        }
+
+
+        stateMachine.ChangeState(primaryAttackState);
+    }
+    private void GameInput_OnAttackRelease(object sender, System.EventArgs e)
+    {
+        isHoldingAttackButton = false;
+    }
     private void GameInput_OnDashPress(object sender, System.EventArgs e)
     {
-        if (stateMachine.currentState != dashState && stateMachine.currentState != wallSlideState && SkillManager.instance.dashSkill.CanUseSkill())
+        if (IsCurrentStateEqualTo(dashState)
+            || IsCurrentStateEqualTo(wallSlideState)
+            || IsCurrentStateEqualTo(aimSwordState)
+            || IsCurrentStateEqualTo(throwSwordState)
+            || IsCurrentStateEqualTo(waitSwordState))
         {
-            stateMachine.ChangeState(dashState);
+            return;
         }
-    }
 
+        if (!skillManager.dashSkill.CanUseSkill())
+        {
+            return;
+        }
+
+        stateMachine.ChangeState(dashState);
+
+    }
     private void GameInput_OnJumpPress(object sender, System.EventArgs e)
     {
-        if (IsGrounded() && stateMachine.currentState != dashState)
+        if (IsCurrentStateEqualTo(primaryAttackState)
+            || IsCurrentStateEqualTo(aimSwordState)
+            || IsCurrentStateEqualTo(throwSwordState)
+            || IsCurrentStateEqualTo(catchSwordState)
+            || IsCurrentStateEqualTo(waitSwordState)
+            || IsCurrentStateEqualTo(dashState))
+        {
+            return;
+        }
+
+        if (coyoteTimeCounter > 0)
         {
             stateMachine.ChangeState(jumpState);
         }
-        if (stateMachine.currentState == wallSlideState)
+        else if (IsCurrentStateEqualTo(wallSlideState))
         {
             if (xInput == 0)
             {
@@ -138,19 +224,41 @@ public class Player : Entity
             }
         }
     }
-
     private void GameInput_OnJumpRelease(object sender, System.EventArgs e)
     {
+        coyoteTimeCounter = 0;
         rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * jumpHeightMultiplier);
     }
     private void GameInput_OnGuardPress(object sender, System.EventArgs e)
     {
-        if (stateMachine.currentState != guardState && stateMachine.currentState != counterAttackState && stateMachine.currentState != hitState && canGuard)
+        if (IsCurrentStateEqualTo(guardState)
+            || IsCurrentStateEqualTo(counterAttackState)
+            || IsCurrentStateEqualTo(hitState)
+            || IsCurrentStateEqualTo(aimSwordState)
+            || IsCurrentStateEqualTo(throwSwordState)
+            || IsCurrentStateEqualTo(catchSwordState)
+            || IsCurrentStateEqualTo(waitSwordState))
+        {
+            return;
+        }
+
+        if (canGuard)
         {
             stateMachine.ChangeState(guardState);
         }
     }
-
+    private void GameInput_OnUltimateSkillPress(object sender, System.EventArgs e)
+    {
+        if(!skillManager.ultimateSkill.CanUseSkill())
+        {
+            return;
+        }
+        stateMachine.ChangeState(ultimateState);
+    }
+    private void GameInput_OnTouchScreen(object sender, System.EventArgs e)
+    {
+        
+    }
     #endregion
 
     protected override void Start()
@@ -158,6 +266,28 @@ public class Player : Entity
         base.Start();
 
         stateMachine.Initialize(idleState);
+        coyoteTimeCounter = coyoteTime;
+
+        enemyLayer = GameManager.instance.enemyLayer;
+        skillManager = SkillManager.instance;
+
+        InitializeGameInput();
+    }
+
+    private void InitializeGameInput()
+    {
+        gameInput = GameInput.instance;
+
+        gameInput.OnJumpPress += GameInput_OnJumpPress;
+        gameInput.OnJumpRelease += GameInput_OnJumpRelease;
+        gameInput.OnDashPress += GameInput_OnDashPress;
+        gameInput.OnAttackPress += GameInput_OnAttackPress;
+        gameInput.OnAttackRelease += GameInput_OnAttackRelease;
+        gameInput.OnGuardPress += GameInput_OnGuardPress;
+        gameInput.OnSwordSkillPress += GameInput_OnSwordSkillPress;
+        gameInput.OnSwordSkillRelease += GameInput_OnSwordSkillRelease;
+        gameInput.OnUltimateSkillPress += GameInput_OnUltimateSkillPress;
+        gameInput.OnTouchScreen += GameInput_OnTouchScreen;
     }
 
     protected override void Update()
@@ -166,8 +296,43 @@ public class Player : Entity
 
         stateMachine.currentState.Update();
 
+        GetHorizontalInput();
+        GetAimDirectionInput();
+
+        ClampVelocity();
+        HandleCoyoteTime();
+    }
+
+    private void HandleCoyoteTime()
+    {
+        if (IsGrounded())
+        {
+            coyoteTimeCounter = coyoteTime;
+        }
+        else if (coyoteTimeCounter >= 0)
+        {
+            coyoteTimeCounter -= Time.deltaTime;
+        }
+    }
+
+    private void GetAimDirectionInput()
+    {
+        if (gameInput.GetAimDirectionInput() != Vector2.zero)
+        {
+            aimSwordDirectionInput = gameInput.GetAimDirectionInput();
+            FaceTo(aimSwordDirectionInput.x);
+        }
+    }
+
+    private void GetHorizontalInput()
+    {
         xInput = gameInput.GetXInput();
         yInput = gameInput.GetYInput();
+    }
+
+    private void ClampVelocity()
+    {
+        Utilities.ClampVelocity(rb, -maxFallSpeed, float.MaxValue);
     }
 
     protected override void FixedUpdate()
@@ -215,6 +380,11 @@ public class Player : Entity
 
         stateMachine.ChangeState(hitState);
     }
+
+    public void CatchSword()
+    {
+        stateMachine.ChangeState(catchSwordState);
+    }
     #endregion
 
     #region Detect Enemy
@@ -223,4 +393,17 @@ public class Player : Entity
         return Physics2D.OverlapCircleAll(attackCheck.position, attackCheckRadius, enemyLayer);
     }
     #endregion
+
+    #region Check Current State
+    public bool IsCurrentStateEqualTo(PlayerState state)
+    {
+        return stateMachine.currentState == state;
+    }
+    #endregion
+
+    public bool IsAimInputInCancelRange()
+    {
+        return Mathf.Abs(aimSwordDirectionInput.x) <= cancelAimInputRange
+            && Mathf.Abs(aimSwordDirectionInput.y) <= cancelAimInputRange;
+    }
 }

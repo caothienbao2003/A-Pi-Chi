@@ -76,12 +76,12 @@ public class Entity : MonoBehaviour
     #endregion
 
     #region Flip
-    public virtual void HandleFlip(float moveX)
+    public virtual void FaceTo(float xValue)
     {
-        if (moveX != 0)
-        {
-            float moveDir = moveX;
-            transform.right = new Vector2(moveDir, 0);
+        if (xValue != 0)
+        {       
+            xValue = xValue > 0 ? 1 : -1;
+            transform.right = new Vector2(xValue, 0);
         }
     }
     #endregion
@@ -90,20 +90,15 @@ public class Entity : MonoBehaviour
     public virtual void SetVelocity(float x, float y)
     {
         rb.velocity = new Vector2(x, y);
-        HandleFlip(x);
+        FaceTo(x);
     }
     #endregion
 
-    public virtual void AnimationTrigger()
+    public virtual void WhenFinishAnimation()
     {
-        stateMachine.currentState.AnimationFinishTrigger();
+        stateMachine.currentState.WhenFinishAnimation();
     }
 
-    public virtual void DealKnockbackTo(Entity entity)
-    {
-        Vector2 knockBackDir = new Vector2(transform.right.x * currentKnockBackDir.x, currentKnockBackDir.y) * currentKnockBackForce;
-        entity.rb.AddForce(knockBackDir, ForceMode2D.Impulse);
-    }
 
     protected virtual void ChangeAnimationWithDelay(string animBoolName, float time)
     {
@@ -116,9 +111,19 @@ public class Entity : MonoBehaviour
         yield return new WaitForSeconds(time);
         anim.SetBool(animBoolName, true);
     }
+    public virtual void DealKnockbackTo(Entity entity)
+    {
+        Vector2 knockBackDir = new Vector2(transform.right.x * currentKnockBackDir.x, currentKnockBackDir.y) * currentKnockBackForce;
+        entity.rb.AddForce(knockBackDir, ForceMode2D.Impulse);
+    }
 
     public virtual void ChangeToHitState()
     {
 
+    }
+
+    public virtual void AddAForce(Vector2 moveDir, float force)
+    {
+        rb.AddForce(moveDir * force, ForceMode2D.Impulse);
     }
 }

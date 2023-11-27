@@ -6,6 +6,12 @@ public class Skill : MonoBehaviour
 {
     [SerializeField] protected float coolDown;
     protected float coolDownTimer;
+    protected Player player;
+
+    private void Awake()
+    {
+        player = FindObjectOfType<Player>();
+    }
 
     private void Update()
     {
@@ -24,6 +30,11 @@ public class Skill : MonoBehaviour
     }
 
     public virtual void UseSkill()
+    {
+        
+    }
+
+    public void ResetCoolDownTimer()
     {
 
     }

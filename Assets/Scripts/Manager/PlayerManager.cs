@@ -5,17 +5,19 @@ using UnityEngine;
 public class PlayerManager : MonoBehaviour
 {
     public static PlayerManager instance { get; set; }
-    public Player player;
+    public Player player { get; set; }
 
     private void Awake()
     {
         if (instance != null)
         {
-            Destroy(instance.gameObject);
+            Destroy(instance);
         }
         else
         {
             instance = this;
         }
+
+        player = FindObjectOfType<Player>();
     }
 }

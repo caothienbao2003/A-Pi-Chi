@@ -8,9 +8,9 @@ public class EntityAnimationTrigger : MonoBehaviour
 
     [SerializeField] protected LayerMask attackLayerMask;
 
-    protected virtual void AnimationTrigger()
+    protected virtual void FinishAnimation()
     {
-        entity.AnimationTrigger();
+        entity.WhenFinishAnimation();
     }
 
     protected virtual void AttackTrigger()

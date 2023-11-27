@@ -26,17 +26,19 @@ public class SkeletonReactState : SkeletonState
     public override void Update()
     {
         base.Update();
+    }
 
-        if (triggerCalled)
+    public override void WhenFinishAnimation()
+    {
+        base.WhenFinishAnimation();
+
+        if (skeleton.IsDetectingPlayer())
         {
-            if (skeleton.IsDetectingPlayer())
-            {
-                stateMachine.ChangeState(skeleton.battleState);
-            }
-            else
-            {
-                stateMachine.ChangeState(skeleton.idleState);
-            }
+            stateMachine.ChangeState(skeleton.battleState);
+        }
+        else
+        {
+            stateMachine.ChangeState(skeleton.idleState);
         }
     }
 }

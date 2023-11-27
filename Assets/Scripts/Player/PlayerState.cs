@@ -9,4 +9,12 @@ public class PlayerState : State
     {
         this.player = player;
     }
+
+    protected void HandleGroundSlide()
+    {
+        if (player.IsGrounded())
+        {
+            player.rb.velocity = new Vector2(player.rb.velocity.x * 0.85f, player.rb.velocity.y);
+        }
+    }
 }

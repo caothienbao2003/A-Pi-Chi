@@ -9,7 +9,6 @@ public class State
     public string animBoolName { get; protected set; }
 
     protected float stateTimer;
-    protected bool triggerCalled;
 
     public State(Entity entity, StateMachine stateMachine, string animBoolName)
     {
@@ -20,7 +19,6 @@ public class State
 
     public virtual void Enter()
     {
-        triggerCalled = false;
         entity.anim.SetBool(animBoolName, true);
     }
 
@@ -39,8 +37,8 @@ public class State
 
     }
 
-    public virtual void AnimationFinishTrigger()
+    public virtual void WhenFinishAnimation()
     {
-        triggerCalled = true;
+
     }
 }

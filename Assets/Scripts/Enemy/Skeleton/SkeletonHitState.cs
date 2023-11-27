@@ -26,10 +26,12 @@ public class SkeletonHitState : SkeletonState
     public override void Update()
     {
         base.Update();
+    }
 
-        if(triggerCalled)
-        {
-            stateMachine.ChangeState(skeleton.battleState);
-        }
+    public override void WhenFinishAnimation()
+    {
+        base.WhenFinishAnimation();
+
+        stateMachine.ChangeState(skeleton.battleState);
     }
 }

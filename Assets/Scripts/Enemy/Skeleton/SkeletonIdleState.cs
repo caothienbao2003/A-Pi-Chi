@@ -34,7 +34,7 @@ public class SkeletonIdleState : SkeletonGroundedState
         {
             if(skeleton.IsTouchingWall() || !skeleton.IsGrounded())
             {
-                skeleton.HandleFlip(-skeleton.transform.right.x);
+                skeleton.FaceTo(-skeleton.transform.right.x);
                 stateMachine.ChangeState(skeleton.idleState);
             }
             else

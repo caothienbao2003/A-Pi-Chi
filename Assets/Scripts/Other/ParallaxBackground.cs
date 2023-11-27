@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class ParallaxBackground : MonoBehaviour
 {
-    private GameObject cam;
+    [SerializeField] private GameObject cam;
     [SerializeField] private bool canMoveY;
     [SerializeField] private float parallaxEffect;
 
@@ -11,8 +11,6 @@ public class ParallaxBackground : MonoBehaviour
 
     void Start()
     {
-        cam = Camera.main.gameObject;
-
         length = GetComponent<SpriteRenderer>().bounds.size.x;
         xPosition = transform.position.x;
     }

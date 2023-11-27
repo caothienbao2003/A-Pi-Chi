@@ -41,7 +41,7 @@ public class SkeletonBattleState : SkeletonState
         {
             stateMachine.ChangeState(skeleton.idleState);
         }
-        else 
+        else if(player != null)
         {
             bool isPlayerFront = (player.transform.position.x - skeleton.transform.position.x) * skeleton.transform.right.x > 0;
             if ((!skeleton.IsGrounded() || skeleton.IsTouchingWall()) && isPlayerFront)
