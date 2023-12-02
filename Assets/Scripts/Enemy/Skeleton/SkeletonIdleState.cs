@@ -42,5 +42,10 @@ public class SkeletonIdleState : SkeletonGroundedState
                 stateMachine.ChangeState(skeleton.walkState);
             }
         }
+
+        if (skeleton.IsDetectingPlayer() && stateMachine.currentState != skeleton.battleState && stateMachine.currentState != skeleton.reactState && skeleton.IsGrounded())
+        {
+            stateMachine.ChangeState(skeleton.reactState);
+        }
     }
 }

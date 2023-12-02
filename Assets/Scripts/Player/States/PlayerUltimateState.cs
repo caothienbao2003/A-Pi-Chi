@@ -8,6 +8,12 @@ public class PlayerUltimateState : PlayerState
     private float flyTimer;
     private float flySpeed;
     private float defaultGravityScale;
+    private ButtonManager buttonManager;
+    private SpriteRenderer playerSpriteRenderer;
+    private float spriteFadeSpeed;
+    private float alphaColor;
+    private Color defaultColor;
+    private Vector2 defaultLocalScale;
     public PlayerUltimateState(Player player, StateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
     {
     }
@@ -28,6 +34,14 @@ public class PlayerUltimateState : PlayerState
         defaultGravityScale = player.rb.gravityScale;
 
         player.rb.gravityScale = 0;
+
+        buttonManager = ButtonManager.instance;
+        buttonManager.HoldingUltimateButton();
+
+        playerSpriteRenderer = player.GetComponentInChildren<SpriteRenderer>();
+        defaultColor = playerSpriteRenderer.color;
+        alphaColor = playerSpriteRenderer.color.a;
+        defaultLocalScale = player.transform.localScale;    
     }
 
     public override void Exit()
@@ -36,6 +50,11 @@ public class PlayerUltimateState : PlayerState
 
         player.rb.gravityScale = defaultGravityScale;
         ultimateSkill.isUsingSKill = false;
+
+        buttonManager.EnableAll();
+        ultimateSkill.ResetCoolDownTimer();
+        playerSpriteRenderer.color = defaultColor;
+        player.transform.localScale = defaultLocalScale;
     }
 
     public override void FixedUpdate()
@@ -48,9 +67,14 @@ public class PlayerUltimateState : PlayerState
         }
         else
         {
+            if (alphaColor >= 0)
+            {
+                alphaColor -= Time.fixedDeltaTime;
+                player.transform.localScale = new Vector2(alphaColor, alphaColor); 
+                playerSpriteRenderer.color = new Color(playerSpriteRenderer.color.r, playerSpriteRenderer.color.g, playerSpriteRenderer.color.b, alphaColor);
+            }
             player.rb.velocity = new Vector2(0, -.1f);
             ultimateSkill.UseSkill();
-
         }
     }
 

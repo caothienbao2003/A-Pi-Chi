@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.Diagnostics;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 using TMPro;
 using UnityEngine.InputSystem.OnScreen;
 
@@ -15,18 +14,21 @@ public class SwordSkillButton : InputButton
 
     [Header("Attack Button Visual")]
     [SerializeField] private GameObject attackButton;
+    [SerializeField] private Image swordSkillIcon;
+    [SerializeField] private Sprite throwSwordSprite;
+    [SerializeField] private Sprite returnSwordSprite;
+    [SerializeField] private GameObject arrowIcons;
 
     private OnScreenStick onScreenStick;
 
     private SwordSkill swordSkill;
-    private TextMeshProUGUI skillText;
+
     private float defaultOnScreenStickMovementRange;
     private GameInput gameInput;
 
     private void Start()
     {
         swordSkill = SkillManager.instance.swordSkill;
-        skillText = swordSkillJoyStick.GetComponentInChildren<TextMeshProUGUI>();
 
         onScreenStick = swordSkillJoyStick.GetComponent<OnScreenStick>();
         defaultOnScreenStickMovementRange = onScreenStick.movementRange;
@@ -39,30 +41,15 @@ public class SwordSkillButton : InputButton
     private void GameInput_OnSwordSkillRelease(object sender, System.EventArgs e)
     {
         joystickBackground.SetActive(false);
-        SetActiveButtons(true);
-
-        if (swordSkill.IsAllSwordThrown())
-        {
-            onScreenStick.movementRange = 0;
-        }
     }
 
     private void GameInput_OnSwordSkillPress(object sender, System.EventArgs e)
     {
-        if (swordSkill.IsAllSwordReturned())
-        {
-            onScreenStick.movementRange = defaultOnScreenStickMovementRange;
-        }
+        arrowIcons.SetActive(false);
 
         if (!swordSkill.IsAllSwordThrown())
         {
             joystickBackground.SetActive(true);
-            SetActiveButtons(false);
-        }
-        else
-        {
-            SetActiveButtons(true);
-
         }
     }
 
@@ -70,12 +57,29 @@ public class SwordSkillButton : InputButton
     {
         if (swordSkill.IsAllSwordReturned())
         {
-            skillText.text = "S";
+            swordSkillIcon.sprite = throwSwordSprite;
+        }
+        if (swordSkill.IsAllSwordThrown())
+        {
+            swordSkillIcon.sprite = returnSwordSprite;
+        }
+    }
+
+    public void FreezeStick(bool freeze)
+    {
+        if(freeze)
+        {
+            onScreenStick.movementRange = 0;
         }
         else
         {
-            skillText.text = "R";
+            onScreenStick.movementRange = defaultOnScreenStickMovementRange;
         }
+    }
+
+    public void SetActiveArrowIcons(bool active)
+    {
+        arrowIcons.SetActive(active);
     }
 
 

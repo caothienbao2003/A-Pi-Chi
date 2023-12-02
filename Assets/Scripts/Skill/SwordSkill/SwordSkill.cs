@@ -12,6 +12,8 @@ public enum SwordType
 
 public class SwordSkill : Skill
 {
+    [Header("Sword Type")]
+    public SwordType swordType = SwordType.Regular;
 
     [Header("Skill Info")]
     [SerializeField] private GameObject swordPrefab;
@@ -58,7 +60,6 @@ public class SwordSkill : Skill
 
     private GameObject[] dots;
 
-    public SwordType swordType = SwordType.Regular;
 
 
     private void Start()
@@ -72,6 +73,7 @@ public class SwordSkill : Skill
 
     public void CreateSword()
     {
+        swordCount++;
         throwDir = AimDirection();
         GameObject newSword = GameObject.Instantiate(swordPrefab, player.transform.position, Quaternion.identity);
         SwordSkillController swordSkillController = newSword.GetComponent<SwordSkillController>();
@@ -82,7 +84,6 @@ public class SwordSkill : Skill
         swordSkillController.SetUpSword(throwDir, throwForce, swordGravity, returnSpeed, player, dontHitTime, catchSwordForce, swordType);
 
         DotsActive(false);
-        swordCount++;
     }
 
     private void SetUpSwordType(SwordSkillController swordSkillController)

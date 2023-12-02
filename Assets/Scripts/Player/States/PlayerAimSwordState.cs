@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerAimSwordState : PlayerState
 {
     private SwordSkill swordSkill;
+    private ButtonManager buttonManager;
     public PlayerAimSwordState(Player player, StateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
     {
     }
@@ -16,6 +17,10 @@ public class PlayerAimSwordState : PlayerState
         swordSkill = SkillManager.instance.swordSkill;
 
         swordSkill.DotsActive(true);
+        buttonManager = ButtonManager.instance;
+
+        buttonManager.HoldingSwordSkillButton();
+        buttonManager.swordSkillButton.SetActiveArrowIcons(false);
     }
 
     public override void Exit()
@@ -23,6 +28,7 @@ public class PlayerAimSwordState : PlayerState
         base.Exit();
 
         swordSkill.DotsActive(false);
+        buttonManager.EnableAll();
     }
 
     public override void FixedUpdate()

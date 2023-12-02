@@ -5,7 +5,7 @@ using UnityEngine;
 public class Skill : MonoBehaviour
 {
     [SerializeField] protected float coolDown;
-    protected float coolDownTimer;
+    public float coolDownTimer;
     protected Player player;
 
     private void Awake()
@@ -22,7 +22,6 @@ public class Skill : MonoBehaviour
     {
         if(coolDownTimer <= 0)
         {
-            coolDownTimer = coolDown;
             return true;
         }
         
@@ -36,6 +35,30 @@ public class Skill : MonoBehaviour
 
     public void ResetCoolDownTimer()
     {
+        coolDownTimer = coolDown;
+    }
 
+    protected Transform FindClosestEnemy(Transform startTransform,float radius)
+    {
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(startTransform.position, radius);
+
+        float closestDistance = Mathf.Infinity;
+        Transform closestEnemy = null;
+
+        foreach(var hit in colliders)
+        {
+            if(hit.GetComponent<Enemy>() != null)
+            {
+                float distanceToEnemy = Vector2.Distance(startTransform.position, hit.transform.position);
+
+                if(distanceToEnemy < closestDistance)
+                {
+                    closestDistance = distanceToEnemy;
+                    closestEnemy = hit.transform;
+                }
+            }
+        }
+
+        return closestEnemy;
     }
 }

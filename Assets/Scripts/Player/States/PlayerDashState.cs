@@ -6,6 +6,7 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 public class PlayerDashState : PlayerState
 {
     private float dashDir;
+    private DashSkill dashSkill;
 
     public PlayerDashState(Player player, StateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
     {
@@ -24,7 +25,8 @@ public class PlayerDashState : PlayerState
             dashDir = player.transform.right.x;
         }
 
-        SkillManager.instance.cloneSkill.CreateClone(player.transform, Vector2.zero);
+        dashSkill = SkillManager.instance.dashSkill;
+        dashSkill.UseSkill();
     }
 
     public override void Exit()
@@ -32,6 +34,7 @@ public class PlayerDashState : PlayerState
         base.Exit();
 
         player.SetVelocity(0, player.rb.velocity.y);
+        dashSkill.OnDashEnd();
     }
 
     public override void Update()

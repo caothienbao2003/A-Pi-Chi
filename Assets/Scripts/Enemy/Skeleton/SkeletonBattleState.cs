@@ -52,7 +52,10 @@ public class SkeletonBattleState : SkeletonState
             {
                 if (Mathf.Abs(player.transform.position.x - skeleton.transform.position.x) < skeleton.attackDistance)
                 {
-                    stateMachine.ChangeState(skeleton.attackState);
+                    if(stateMachine.currentState != skeleton.hitState)
+                    {
+                        stateMachine.ChangeState(skeleton.attackState);
+                    }
                 }
                 else
                 {

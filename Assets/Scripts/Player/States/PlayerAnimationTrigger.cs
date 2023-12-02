@@ -5,19 +5,26 @@ using static UnityEngine.EventSystems.EventTrigger;
 
 public class PlayerAnimationTrigger : EntityAnimationTrigger
 {
+    protected override void AttackTrigger()
+    {
+        base.AttackTrigger();
+    }
+
     private void CounterAttackTrigger()
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(entity.attackCheck.position, entity.attackCheckRadius, attackLayerMask);
 
+        Player player = GetComponentInParent<Player>();
         foreach (var hit in colliders)
         {
             if (hit.GetComponent<Enemy>() != null)
             {
                 Enemy enemy = hit.GetComponent<Enemy>();
-                Player player = GetComponentInParent<Player>();
-
+                
                 enemy.ChangeToStunState();
-                player.DealKnockbackTo(enemy);
+                Utilities.DealKnockback(player.transform.position, enemy, player.counterAttackKnockbackDir, player.counterAttackKnockbackForce);
+                player.stats.DealDamageTo(enemy);
+            
             }
         }
     }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(EntityStats))]
 public class Entity : MonoBehaviour
 {
     protected StateMachine stateMachine;
@@ -13,6 +14,7 @@ public class Entity : MonoBehaviour
     #region Component
     public Animator anim { get; private set; }
     public Rigidbody2D rb { get; private set; }
+    public EntityStats stats { get; private set; }
     #endregion
 
     #region Parameter
@@ -23,6 +25,7 @@ public class Entity : MonoBehaviour
 
     [SerializeField] protected Transform wallCheck;
     [SerializeField] protected float wallCheckDistance;
+    [SerializeField] protected Vector2 wallCheckSize;
 
     public Transform attackCheck;
     public float attackCheckRadius;
@@ -41,6 +44,7 @@ public class Entity : MonoBehaviour
 
         anim = GetComponentInChildren<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        stats = GetComponent<EntityStats>();
     }
 
     protected virtual void Start()
@@ -60,7 +64,10 @@ public class Entity : MonoBehaviour
     #region Collision
     public virtual bool IsGrounded() => Physics2D.CircleCast(groundCheck.position, .2f, Vector2.down, groundCheckDistance, groundLayer);
 
-    public virtual bool IsTouchingWall() => Physics2D.Raycast(wallCheck.position, transform.right, wallCheckDistance, groundLayer);
+    public virtual bool IsTouchingWall()
+    {
+        return Physics2D.BoxCast(wallCheck.position, wallCheckSize, 0, transform.right, 0, groundLayer);
+    }
 
     protected virtual void OnDrawGizmos()
     {
@@ -68,8 +75,7 @@ public class Entity : MonoBehaviour
         Gizmos.DrawLine(groundCheck.position, new Vector2(groundCheck.position.x, groundCheck.position.y - groundCheckDistance));
 
         //Draw Wall Check
-        Gizmos.DrawLine(wallCheck.position, new Vector2(wallCheck.position.x + wallCheckDistance, wallCheck.position.y));
-
+        Gizmos.DrawWireCube(wallCheck.position, wallCheckSize);
         //Draw Attack Check
         Gizmos.DrawWireSphere(attackCheck.position, attackCheckRadius);
     }
@@ -79,7 +85,7 @@ public class Entity : MonoBehaviour
     public virtual void FaceTo(float xValue)
     {
         if (xValue != 0)
-        {       
+        {
             xValue = xValue > 0 ? 1 : -1;
             transform.right = new Vector2(xValue, 0);
         }
@@ -117,9 +123,19 @@ public class Entity : MonoBehaviour
         entity.rb.AddForce(knockBackDir, ForceMode2D.Impulse);
     }
 
+    public virtual void DamageEffect()
+    {
+
+    }
+
     public virtual void ChangeToHitState()
     {
 
+    }
+
+    public virtual void ChangeCurrentStateTo(State state)
+    {
+        stateMachine.ChangeState(state);
     }
 
     public virtual void AddAForce(Vector2 moveDir, float force)

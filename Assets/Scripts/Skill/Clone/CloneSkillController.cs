@@ -13,7 +13,6 @@ public class CloneSkillController : MonoBehaviour
     private CloneSkill cloneSkill;
 
     private bool canAttack = false;
-    private Player player;
 
     private int comboCounter;
 
@@ -23,6 +22,8 @@ public class CloneSkillController : MonoBehaviour
     private float detectEnemyRadius;
 
     private Transform closestEnemy;
+    private bool isDash;
+
 
     [SerializeField] private Transform attackCheck;
 
@@ -30,29 +31,6 @@ public class CloneSkillController : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
-    }
-
-    void Start()
-    {
-        cloneSkill = SkillManager.instance.cloneSkill; 
-
-        cloneTimer = cloneSkill.cloneDuration;
-        colorLosingSpeed = cloneSkill.colorLosingSpeed;
-
-        player = PlayerManager.instance.player;
-        comboCounter = Random.Range(0, 3);
-
-        currentKnockbackDir = player.knockBackAttackDir[comboCounter];
-        currentKnockbackForce = player.knockBackAttackForce[comboCounter];
-
-        detectEnemyRadius = cloneSkill.detectEnemyRadius;
-
-        FaceClosestEnemy();
-
-        if (canAttack)
-        {
-            anim.SetInteger("ComboCounter", comboCounter + 1);
-        }
     }
 
     void Update()
@@ -76,7 +54,7 @@ public class CloneSkillController : MonoBehaviour
 
     protected virtual void AttackTrigger()
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(attackCheck.position, player.attackCheckRadius, GameManager.instance.enemyLayer);
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(attackCheck.position, detectEnemyRadius, GameManager.instance.enemyLayer);
 
         foreach (var hit in colliders)
         {
@@ -99,24 +77,6 @@ public class CloneSkillController : MonoBehaviour
 
     private void FaceClosestEnemy()
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, detectEnemyRadius, GameManager.instance.enemyLayer);
-
-        float closestDistance = Mathf.Infinity;
-
-        foreach (Collider2D hit in colliders)
-        {
-            if(hit.GetComponent<Enemy>() != null)
-            {
-                float distanceToEnemy = Vector2.Distance(transform.position, hit.transform.position);
-                
-                if(distanceToEnemy < closestDistance)
-                {
-                    closestDistance = distanceToEnemy;
-                    closestEnemy = hit.transform;
-                }
-            }
-        }
-
         if(closestEnemy != null)
         {
             canAttack = true;
@@ -127,5 +87,33 @@ public class CloneSkillController : MonoBehaviour
         {
             canAttack = false;
         }
+    }
+
+    public void SetUpClone(float cloneDuration, float colorLosingSpeed, float detectEnemyRadius, Transform closestEnemy, bool isDash)
+    {
+        this.cloneTimer = cloneDuration;
+        this.colorLosingSpeed = colorLosingSpeed;
+        this.detectEnemyRadius = detectEnemyRadius;
+        this.closestEnemy = closestEnemy;
+
+        Player player = PlayerManager.instance.player;
+
+        currentKnockbackDir = player.knockBackAttackDir[comboCounter];
+        currentKnockbackForce = player.knockBackAttackForce[comboCounter];
+
+        this.isDash = isDash;
+
+        FaceClosestEnemy();
+
+        if (canAttack)
+        {
+            comboCounter = Random.Range(0, 3);
+            anim.SetInteger("ComboCounter", comboCounter + 1);
+        }
+        else
+        {
+            anim.SetBool("IsDash", isDash);
+        }    
+
     }
 }

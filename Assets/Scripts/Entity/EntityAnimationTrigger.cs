@@ -26,6 +26,8 @@ public class EntityAnimationTrigger : MonoBehaviour
                 
                 attackedEntity.ChangeToHitState();
                 attackingEntity.DealKnockbackTo(attackedEntity);
+
+                attackingEntity.stats.DealDamageTo(attackedEntity);
             }
         }
     }

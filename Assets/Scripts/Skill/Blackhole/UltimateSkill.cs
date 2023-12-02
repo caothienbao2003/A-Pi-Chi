@@ -81,9 +81,4 @@ public class UltimateSkill : Skill
             currentBlackhole.canExitBlackhole = true;
         }
     }
-
-    public bool IsUsingSkill()
-    {
-        return isUsingSKill;
-    }
 }

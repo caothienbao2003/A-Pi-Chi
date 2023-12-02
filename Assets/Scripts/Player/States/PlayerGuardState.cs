@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerGuardState : PlayerState
 {
+    private ParrySkill parrySkill;
     public PlayerGuardState(Player player, StateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
     {
     }
@@ -13,13 +14,12 @@ public class PlayerGuardState : PlayerState
         base.Enter();
 
         stateTimer = player.counterAttackTimer;
+        parrySkill = SkillManager.instance.parrySkill;
     }
 
     public override void Exit()
     {
         base.Exit();
-
-        player.GuardCoolDown();
     }
 
     public override void FixedUpdate()
@@ -33,20 +33,7 @@ public class PlayerGuardState : PlayerState
     {
         base.Update();
 
-        if(player.EnemiesDectected() != null)
-        {
-            foreach (var hit in player.EnemiesDectected())
-            {
-                Enemy enemy = hit.GetComponent<Enemy>();
-                if (enemy != null)
-                {
-                    if(enemy.canBeStunned)
-                    {
-                        stateMachine.ChangeState(player.counterAttackState);
-                    }
-                }
-            }
-        }
+        parrySkill.Guarding();
 
         if (stateTimer <= 0)
         {

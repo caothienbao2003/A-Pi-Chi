@@ -14,7 +14,7 @@ public class PlayerState : State
     {
         if (player.IsGrounded())
         {
-            player.rb.velocity = new Vector2(player.rb.velocity.x * 0.85f, player.rb.velocity.y);
+            player.rb.velocity = new Vector2(player.rb.velocity.x * player.groundSlideMultiplier, player.rb.velocity.y);
         }
     }
 }

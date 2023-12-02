@@ -47,20 +47,36 @@ public class Blackhole : MonoBehaviour
 
     private void GameInput_OnTouchScreen(object sender, System.EventArgs e)
     {
-        GameObject touchedObject = gameInput.GetTouchedGameObject(GameManager.instance.enemyLayer);
-
-        if (touchedObject != null && touchedObject.CompareTag("Indicator"))
+        if(enemyList.Count <= 0)
         {
-            if (touchedObject.GetComponentInParent<Enemy>() != null)
-            {
-                Enemy enemy = touchedObject.GetComponentInParent<Enemy>();
-                if (enemy.isEffectedByUltimate)
-                {
-                    float randomOffset = Random.Range(0, 2) == 0 ? 1 : -1;
-                    SkillManager.instance.cloneSkill.CreateClone(enemy.transform, new Vector3(randomOffset, 0));
-                }
-            }
+            return;
         }
+
+        int randomEnemyIndex = Random.Range(0, enemyList.Count);
+
+        float randomOffset = Random.Range(0, 2) == 0 ? 1 : -1;
+        if (SkillManager.instance.cloneSkill.CanUseSkill())
+        {
+            SkillManager.instance.cloneSkill.CreateClone(enemyList[randomEnemyIndex].transform, new Vector3(randomOffset, 0));
+        }
+
+        //GameObject touchedObject = gameInput.GetTouchedGameObject(GameManager.instance.enemyLayer);
+
+        //if (touchedObject != null && touchedObject.CompareTag("Indicator"))
+        //{
+        //    if (touchedObject.GetComponentInParent<Enemy>() != null)
+        //    {
+        //        Enemy enemy = touchedObject.GetComponentInParent<Enemy>();
+        //        if (enemy.isEffectedByUltimate)
+        //        {
+        //            float randomOffset = Random.Range(0, 2) == 0 ? 1 : -1;
+        //            if(SkillManager.instance.cloneSkill.CanUseSkill())
+        //            {
+        //                SkillManager.instance.cloneSkill.CreateClone(enemy.transform, new Vector3(randomOffset, 0));
+        //            }
+        //        }
+        //    }
+        //}
     }
 
     public void SetUpBlackHole(float maxSize, float growSpeed, float skrinkSpeed,

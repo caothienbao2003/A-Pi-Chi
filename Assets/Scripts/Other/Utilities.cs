@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class Utilities
 {
@@ -34,5 +35,13 @@ public class Utilities
         Vector2 clampedVelocity = rb.velocity;
         clampedVelocity.y = Mathf.Clamp(rb.velocity.y, min, max);
         rb.velocity = clampedVelocity;
+    }
+
+    public static void DealKnockback(Vector2 attackingPos, Entity attackedEntity, Vector2 direction, float force)
+    {
+        float dir = attackingPos.x - attackedEntity.transform.position.x > 0 ? -1: 1;
+        Vector2 knockBackDir = new Vector2(dir * direction.x, direction.y) * force;
+        
+        attackedEntity.rb.AddForce(knockBackDir, ForceMode2D.Impulse);
     }
 }

@@ -35,7 +35,6 @@ public class PlayerIdleState : PlayerGroundedState
             }
         }
 
-        HandleGroundSlide();
 
         if (player.xInput != 0 && !player.isBusy)
         {
@@ -45,5 +44,11 @@ public class PlayerIdleState : PlayerGroundedState
         {
             stateMachine.ChangeState(player.fallState);
         }
+    }
+
+    public override void FixedUpdate()
+    {
+        base.FixedUpdate();
+        HandleGroundSlide();
     }
 }

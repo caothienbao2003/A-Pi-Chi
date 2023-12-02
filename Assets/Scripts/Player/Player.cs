@@ -34,6 +34,7 @@ public class Player : Entity
     #region Parameters
     [Header("Move On Ground")]
     public float moveSpeed;
+    public float groundSlideMultiplier;
     public float xInput { get; private set; }
     public float yInput { get; private set; }
 
@@ -94,11 +95,14 @@ public class Player : Entity
     [SerializeField] private GameObject moveButton;
     [SerializeField] private GameObject skillButton;
 
-
     protected override void Awake()
     {
         base.Awake();
+        SetUpState();
+    }
 
+    private void SetUpState()
+    {
         groundedState = new PlayerGroundedState(this, stateMachine, "Grounded");
         idleState = new PlayerIdleState(this, stateMachine, "Idle");
         moveState = new PlayerMoveState(this, stateMachine, "Move");
@@ -127,7 +131,8 @@ public class Player : Entity
             || IsCurrentStateEqualTo(aimSwordState)
             || IsCurrentStateEqualTo(throwSwordState)
             || IsCurrentStateEqualTo(catchSwordState)
-            || IsCurrentStateEqualTo(waitSwordState))
+            || IsCurrentStateEqualTo(waitSwordState)
+            || IsCurrentStateEqualTo(ultimateState))
         {
             return;
         }
@@ -165,7 +170,10 @@ public class Player : Entity
             || IsCurrentStateEqualTo(hitState)
             || IsCurrentStateEqualTo(catchSwordState)
             || IsCurrentStateEqualTo(throwSwordState)
-            || IsCurrentStateEqualTo(waitSwordState))
+            || IsCurrentStateEqualTo(waitSwordState)
+            || IsCurrentStateEqualTo(ultimateState)
+            || IsCurrentStateEqualTo(wallSlideState)
+            )
         {
             return;
         }
@@ -183,7 +191,8 @@ public class Player : Entity
             || IsCurrentStateEqualTo(wallSlideState)
             || IsCurrentStateEqualTo(aimSwordState)
             || IsCurrentStateEqualTo(throwSwordState)
-            || IsCurrentStateEqualTo(waitSwordState))
+            || IsCurrentStateEqualTo(waitSwordState)
+            || IsCurrentStateEqualTo(ultimateState))
         {
             return;
         }
@@ -193,6 +202,7 @@ public class Player : Entity
             return;
         }
 
+        skillManager.dashSkill.ResetCoolDownTimer();
         stateMachine.ChangeState(dashState);
 
     }
@@ -203,7 +213,8 @@ public class Player : Entity
             || IsCurrentStateEqualTo(throwSwordState)
             || IsCurrentStateEqualTo(catchSwordState)
             || IsCurrentStateEqualTo(waitSwordState)
-            || IsCurrentStateEqualTo(dashState))
+            || IsCurrentStateEqualTo(dashState)
+            || IsCurrentStateEqualTo(ultimateState))
         {
             return;
         }
@@ -214,14 +225,7 @@ public class Player : Entity
         }
         else if (IsCurrentStateEqualTo(wallSlideState))
         {
-            if (xInput == 0)
-            {
-                stateMachine.ChangeState(wallHopState);
-            }
-            else if (xInput != transform.right.x)
-            {
-                stateMachine.ChangeState(wallJumpState);
-            }
+            stateMachine.ChangeState(wallJumpState); 
         }
     }
     private void GameInput_OnJumpRelease(object sender, System.EventArgs e)
@@ -237,7 +241,13 @@ public class Player : Entity
             || IsCurrentStateEqualTo(aimSwordState)
             || IsCurrentStateEqualTo(throwSwordState)
             || IsCurrentStateEqualTo(catchSwordState)
-            || IsCurrentStateEqualTo(waitSwordState))
+            || IsCurrentStateEqualTo(waitSwordState)
+            || IsCurrentStateEqualTo(ultimateState))
+        {
+            return;
+        }
+
+        if(!skillManager.parrySkill.CanUseSkill())
         {
             return;
         }
@@ -249,11 +259,20 @@ public class Player : Entity
     }
     private void GameInput_OnUltimateSkillPress(object sender, System.EventArgs e)
     {
+        if(IsCurrentStateEqualTo(ultimateState))
+        {
+            return;
+        }
+
         if(!skillManager.ultimateSkill.CanUseSkill())
         {
             return;
         }
         stateMachine.ChangeState(ultimateState);
+    }
+    private void GameInput_OnCrystalSkillPress(object sender, System.EventArgs e)
+    {
+        
     }
     private void GameInput_OnTouchScreen(object sender, System.EventArgs e)
     {
@@ -287,8 +306,11 @@ public class Player : Entity
         gameInput.OnSwordSkillPress += GameInput_OnSwordSkillPress;
         gameInput.OnSwordSkillRelease += GameInput_OnSwordSkillRelease;
         gameInput.OnUltimateSkillPress += GameInput_OnUltimateSkillPress;
+        gameInput.OnCrystalSkillPress += GameInput_OnCrystalSkillPress;
+
         gameInput.OnTouchScreen += GameInput_OnTouchScreen;
     }
+
 
     protected override void Update()
     {
@@ -341,23 +363,6 @@ public class Player : Entity
 
         stateMachine.currentState.FixedUpdate();
     }
-
-
-    #region CoolDown
-
-    private IEnumerator GuardCoolDownCo()
-    {
-        canGuard = false;
-        yield return new WaitForSeconds(counterAttackCooldown);
-        canGuard = true;
-    }
-
-    public void GuardCoolDown()
-    {
-        StartCoroutine(GuardCoolDownCo());
-    }
-
-    #endregion
 
     #region Busy
     private IEnumerator BusyForCo(float seconds)

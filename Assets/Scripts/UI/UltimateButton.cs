@@ -6,30 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.OnScreen;
 
-public class UltimateButton : InputButton
+public class UltimateButton : MonoBehaviour
 {
-    private Player player;
-    private bool isObjectsActive = true;
-    private GameInput gameInput;
-    private UltimateSkill ultimateSkill;
-
-
-    private void Start()
-    {
-        player = PlayerManager.instance.player;
-        gameInput = GameInput.instance;
-        ultimateSkill = SkillManager.instance.ultimateSkill;
-    }
-
-    private void Update()
-    {
-        if(ultimateSkill.IsUsingSkill())
-        {
-            SetActiveButtons(false);
-        }
-        else
-        {
-            SetActiveButtons(true);
-        }
-    }
+    
 }

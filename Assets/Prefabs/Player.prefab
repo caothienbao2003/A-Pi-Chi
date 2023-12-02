@@ -136,7 +136,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1742001445
   m_SortingLayer: 3
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: -3318188226485093758, guid: ae72133dacba6ec4eb33ecde48f50e56, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -195,7 +195,7 @@ GameObject:
   - component: {fileID: 2950838342669098854}
   - component: {fileID: 2950838342669098872}
   - component: {fileID: 2950838342669098855}
-  - component: {fileID: 2091113845}
+  - component: {fileID: 6938283559575483960}
   m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
@@ -257,8 +257,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.08357999, y: -0.30524838}
-  m_Size: {x: 0.7253023, y: 2.0901725}
+  m_Offset: {x: -0.115516305, y: -0.29944122}
+  m_Size: {x: 0.66142964, y: 2.0785582}
   m_Direction: 0
 --- !u!114 &2950838342669098855
 MonoBehaviour:
@@ -278,11 +278,13 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   wallCheck: {fileID: 2950838342823211156}
-  wallCheckDistance: 0.2
+  wallCheckDistance: 0
+  wallCheckSize: {x: 0.12, y: 0.8}
   attackCheck: {fileID: 2950838342101261527}
   attackCheckRadius: 1.2
   moveSpeed: 10
-  jumpForce: 15
+  groundSlideMultiplier: 0.75
+  jumpForce: 18
   movementForceInAir: 30
   airDragMultiplier: 0.98
   jumpHeightMultiplier: 0.7
@@ -291,9 +293,9 @@ MonoBehaviour:
   dashSpeed: 30
   dashTime: 0.2
   wallSlideSpeed: 2
-  wallSlideHoldTime: 0.4
-  wallJumpTime: 1
-  wallJumpForce: 15
+  wallSlideHoldTime: 1
+  wallJumpTime: 0.3
+  wallJumpForce: 10
   wallJumpDir: {x: 1, y: 2}
   wallHopTime: 1
   wallHopForce: 2
@@ -315,32 +317,31 @@ MonoBehaviour:
   counterAttackCooldown: 0.5
   counterAttackKnockbackDir: {x: 1, y: 1.5}
   counterAttackKnockbackForce: 5
---- !u!61 &2091113845
-BoxCollider2D:
+  cancelAimInputRange: 0.5
+  moveButton: {fileID: 0}
+  skillButton: {fileID: 0}
+--- !u!114 &6938283559575483960
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2950838342669098873}
-  m_Enabled: 0
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: -0.08958173, y: -0.4042654}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 0.7013955, y: 1.8085308}
-  m_EdgeRadius: 0
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd9a8bf21d8c3ee48bee99d4783f15e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  strength:
+    baseValue: 0
+    modifiers: []
+  damage:
+    baseValue: 0
+    modifiers: []
+  maxHp:
+    baseValue: 0
+    modifiers: []
+  currentHp: 0
 --- !u!1 &2950838342823211157
 GameObject:
   m_ObjectHideFlags: 0
@@ -365,7 +366,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2950838342823211157}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.167, y: 0, z: 0}
+  m_LocalPosition: {x: 0.227, y: 0.04, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

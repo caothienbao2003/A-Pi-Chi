@@ -34,7 +34,7 @@ public class PlayerWaitSwordState : PlayerState
         base.Update();
 
 
-        if(swordSkill.IsAllSwordReturned())
+        if (swordSkill.IsAllSwordReturned())
         {
             stateMachine.ChangeState(player.catchSwordState);
         }

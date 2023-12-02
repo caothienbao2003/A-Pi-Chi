@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 
 public class GameInput : MonoBehaviour
 {
-    private GameInputActions gameInputActions;
+    public GameInputActions gameInputActions { get; private set; }
     public event EventHandler OnJumpPress;
     public event EventHandler OnJumpRelease;
     public event EventHandler OnDashPress;
@@ -17,6 +17,7 @@ public class GameInput : MonoBehaviour
     public event EventHandler OnSwordSkillPress;
     public event EventHandler OnSwordSkillRelease;
     public event EventHandler OnUltimateSkillPress;
+    public event EventHandler OnCrystalSkillPress;
 
     public event EventHandler OnTouchScreen;
 
@@ -34,6 +35,8 @@ public class GameInput : MonoBehaviour
         instance = this;
 
         gameInputActions = new GameInputActions();
+
+
         gameInputActions.Player.Enable();
         gameInputActions.Touch.Enable();
 
@@ -46,7 +49,14 @@ public class GameInput : MonoBehaviour
         gameInputActions.Player.SwordSkill.performed += SwordSkill_performed;
         gameInputActions.Player.SwordSkill.canceled += SwordSkill_canceled;
         gameInputActions.Player.UltimateSkill.performed += UltimateSkill_performed;
+        gameInputActions.Player.CrystalSkill.performed += CrystalSkill_performed;
+
         gameInputActions.Touch.PrimaryTouch.performed += PrimaryTouch_performed;
+    }
+
+    private void CrystalSkill_performed(InputAction.CallbackContext obj)
+    {
+        OnCrystalSkillPress?.Invoke(this, EventArgs.Empty);
     }
 
     private void OnEnable()
@@ -57,7 +67,7 @@ public class GameInput : MonoBehaviour
     private void OnDisable()
     {
         gameInputActions.Disable();
-    }   
+    }
 
     private void UltimateSkill_performed(InputAction.CallbackContext obj)
     {

@@ -107,6 +107,15 @@ public partial class @GameInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Crystal Skill"",
+                    ""type"": ""Button"",
+                    ""id"": ""197c07da-134b-4a52-99ef-1a674851ca0c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -285,6 +294,17 @@ public partial class @GameInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Ultimate Skill"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""def14f05-3e43-41d7-934d-af0d32a065d3"",
+                    ""path"": ""<Keyboard>/l"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Crystal Skill"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -325,30 +345,8 @@ public partial class @GameInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""df6b8158-605a-4cb5-9e5c-89fe59b763c4"",
-                    ""path"": ""<Mouse>/press"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""PrimaryTouch"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""3f516499-229f-4e74-b3e7-1b777185565a"",
                     ""path"": ""<Touchscreen>/primaryTouch/position"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""TouchPosition"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""8247b80e-a286-4108-8e35-29376895c523"",
-                    ""path"": ""<Mouse>/position"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -378,6 +376,7 @@ public partial class @GameInputActions: IInputActionCollection2, IDisposable
         m_Player_SwordSkill = m_Player.FindAction("Sword Skill", throwIfNotFound: true);
         m_Player_AimDirection = m_Player.FindAction("Aim Direction", throwIfNotFound: true);
         m_Player_UltimateSkill = m_Player.FindAction("Ultimate Skill", throwIfNotFound: true);
+        m_Player_CrystalSkill = m_Player.FindAction("Crystal Skill", throwIfNotFound: true);
         // Touch
         m_Touch = asset.FindActionMap("Touch", throwIfNotFound: true);
         m_Touch_PrimaryTouch = m_Touch.FindAction("PrimaryTouch", throwIfNotFound: true);
@@ -452,6 +451,7 @@ public partial class @GameInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_SwordSkill;
     private readonly InputAction m_Player_AimDirection;
     private readonly InputAction m_Player_UltimateSkill;
+    private readonly InputAction m_Player_CrystalSkill;
     public struct PlayerActions
     {
         private @GameInputActions m_Wrapper;
@@ -465,6 +465,7 @@ public partial class @GameInputActions: IInputActionCollection2, IDisposable
         public InputAction @SwordSkill => m_Wrapper.m_Player_SwordSkill;
         public InputAction @AimDirection => m_Wrapper.m_Player_AimDirection;
         public InputAction @UltimateSkill => m_Wrapper.m_Player_UltimateSkill;
+        public InputAction @CrystalSkill => m_Wrapper.m_Player_CrystalSkill;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -501,6 +502,9 @@ public partial class @GameInputActions: IInputActionCollection2, IDisposable
             @UltimateSkill.started += instance.OnUltimateSkill;
             @UltimateSkill.performed += instance.OnUltimateSkill;
             @UltimateSkill.canceled += instance.OnUltimateSkill;
+            @CrystalSkill.started += instance.OnCrystalSkill;
+            @CrystalSkill.performed += instance.OnCrystalSkill;
+            @CrystalSkill.canceled += instance.OnCrystalSkill;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -532,6 +536,9 @@ public partial class @GameInputActions: IInputActionCollection2, IDisposable
             @UltimateSkill.started -= instance.OnUltimateSkill;
             @UltimateSkill.performed -= instance.OnUltimateSkill;
             @UltimateSkill.canceled -= instance.OnUltimateSkill;
+            @CrystalSkill.started -= instance.OnCrystalSkill;
+            @CrystalSkill.performed -= instance.OnCrystalSkill;
+            @CrystalSkill.canceled -= instance.OnCrystalSkill;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -623,6 +630,7 @@ public partial class @GameInputActions: IInputActionCollection2, IDisposable
         void OnSwordSkill(InputAction.CallbackContext context);
         void OnAimDirection(InputAction.CallbackContext context);
         void OnUltimateSkill(InputAction.CallbackContext context);
+        void OnCrystalSkill(InputAction.CallbackContext context);
     }
     public interface ITouchActions
     {
