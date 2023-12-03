@@ -21,6 +21,13 @@ public class PlayerAimSwordState : PlayerState
 
         buttonManager.HoldingSwordSkillButton();
         buttonManager.swordSkillButton.SetActiveArrowIcons(false);
+
+        gameInput.OnSwordSkillRelease += GameInput_OnSwordSkillRelease;
+    }
+
+    private void GameInput_OnSwordSkillRelease(object sender, System.EventArgs e)
+    {
+        player.OnSwordSkillRelease();
     }
 
     public override void Exit()
@@ -29,6 +36,8 @@ public class PlayerAimSwordState : PlayerState
 
         swordSkill.DotsActive(false);
         buttonManager.EnableAll();
+
+        gameInput.OnSwordSkillRelease -= GameInput_OnSwordSkillRelease;
     }
 
     public override void FixedUpdate()
@@ -42,7 +51,9 @@ public class PlayerAimSwordState : PlayerState
     {
         base.Update();
 
-        if(player.IsAimInputInCancelRange())
+        player.FaceTo(player.aimSwordDirectionInput.x);
+
+        if (player.IsAimInputInCancelRange())
         {
             swordSkill.DotsActive(false);
         }

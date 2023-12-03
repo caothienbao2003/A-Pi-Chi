@@ -15,6 +15,8 @@ public class PlayerJumpState : PlayerAirState
         player.rb.AddForce(new Vector2(0, player.jumpForce), ForceMode2D.Impulse);
     }
 
+
+
     public override void Exit()
     {
         base.Exit();
@@ -23,11 +25,6 @@ public class PlayerJumpState : PlayerAirState
     public override void Update()
     {
         base.Update();
-
-        if(player.IsTouchingWall())
-        {
-            stateMachine.ChangeState(player.wallSlideState);
-        }
 
         if(player.rb.velocity.y <0)
         {

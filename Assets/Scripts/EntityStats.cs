@@ -5,7 +5,12 @@ using UnityEngine;
 [RequireComponent(typeof(Entity))]
 public class EntityStats : MonoBehaviour
 {
+    [Header("Major Stats")]
     public Stat strength;
+    public Stat agility;
+    public Stat intelligence;
+    public Stat vitality;
+
     public Stat damage;
     public Stat maxHp;
 
@@ -20,11 +25,13 @@ public class EntityStats : MonoBehaviour
         currentHp = maxHp.GetValue();
     }
 
-    public virtual void DealDamageTo(Entity entity)
+    public virtual void DealDamageTo(Entity attackedEntity)
     {
         float totalDamage = damage.GetValue() + strength.GetValue();
 
-        entity.GetComponent<EntityStats>().TakeDamage(totalDamage);
+        attackedEntity.GetComponent<EntityStats>().TakeDamage(totalDamage);
+
+        entity.DealKnockbackTo(attackedEntity);
     }
 
     public virtual void TakeDamage(float _damage)
@@ -42,6 +49,6 @@ public class EntityStats : MonoBehaviour
 
     protected virtual void Die()
     {
-
+        
     }
 }

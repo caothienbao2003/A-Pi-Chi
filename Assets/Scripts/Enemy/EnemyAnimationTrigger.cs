@@ -13,4 +13,9 @@ public class EnemyAnimationTrigger : EntityAnimationTrigger
     {
         entity.GetComponent<Enemy>().CannotBeStuned();
     }
+
+    private void SelfDestroy()
+    {
+        Destroy(entity.gameObject);
+    }
 }

@@ -13,11 +13,26 @@ public class PlayerAirState : PlayerState
     public override void Enter()
     {
         base.Enter();
+        gameInput.OnJumpRelease += GameInput_OnJumpRelease;
+        gameInput.OnSwordSkillPress += GameInput_OnSwordSkillPress;
+    }
+
+    private void GameInput_OnSwordSkillPress(object sender, System.EventArgs e)
+    {
+        player.OnSwordSkillPress();
+    }
+
+    private void GameInput_OnJumpRelease(object sender, System.EventArgs e)
+    {
+        player.coyoteTimeCounter = 0;
+        player.rb.velocity = new Vector2(player.rb.velocity.x, player.rb.velocity.y * player.jumpHeightMultiplier);
     }
 
     public override void Exit()
     {
         base.Exit();
+        gameInput.OnJumpRelease -= GameInput_OnJumpRelease;
+        gameInput.OnSwordSkillPress -= GameInput_OnSwordSkillPress; 
     }
 
     public override void FixedUpdate()

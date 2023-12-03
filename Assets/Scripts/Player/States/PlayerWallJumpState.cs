@@ -31,7 +31,12 @@ public class PlayerWallJumpState : PlayerState
             stateMachine.ChangeState(player.fallState);
         }
 
-        if(player.IsTouchingWall())
+        if(player.CanWallLedge())
+        {
+            Debug.Log("Wall Ledge from Wall Jump");
+            stateMachine.ChangeState(player.wallLedgeState);
+        }
+        else if(player.IsTouchingWall())
         {
             stateMachine.ChangeState(player.wallSlideState);
         }

@@ -29,6 +29,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2950838342669098853}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1327201254208590089
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3134533364054634355}
+  m_Layer: 7
+  m_Name: Wall Ledge Check
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3134533364054634355
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1327201254208590089}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.262, y: 0.816, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2950838342669098853}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2950838342101261480
@@ -219,6 +250,7 @@ Transform:
   - {fileID: 2950838342862013503}
   - {fileID: 2950838342823211156}
   - {fileID: 2950838342101261527}
+  - {fileID: 3134533364054634355}
   - {fileID: 703149258}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -257,8 +289,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.115516305, y: -0.29944122}
-  m_Size: {x: 0.66142964, y: 2.0785582}
+  m_Offset: {x: -0.09470749, y: -0.29944122}
+  m_Size: {x: 0.57809067, y: 2.0785582}
   m_Direction: 0
 --- !u!114 &2950838342669098855
 MonoBehaviour:
@@ -279,7 +311,7 @@ MonoBehaviour:
     m_Bits: 64
   wallCheck: {fileID: 2950838342823211156}
   wallCheckDistance: 0
-  wallCheckSize: {x: 0.12, y: 0.8}
+  wallCheckSize: {x: 0.15, y: 0.4}
   attackCheck: {fileID: 2950838342101261527}
   attackCheckRadius: 1.2
   moveSpeed: 10
@@ -300,6 +332,8 @@ MonoBehaviour:
   wallHopTime: 1
   wallHopForce: 2
   wallHopDir: {x: 1, y: 1}
+  wallLedgeCheck: {fileID: 3134533364054634355}
+  wallLedgeCheckSize: {x: 0, y: 0}
   comboTime: 0.5
   attackMovements:
   - {x: 1, y: 1}
@@ -366,7 +400,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2950838342823211157}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.227, y: 0.04, z: 0}
+  m_LocalPosition: {x: 0.264, y: 0.222, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

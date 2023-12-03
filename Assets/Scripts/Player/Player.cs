@@ -15,6 +15,7 @@ public class Player : Entity
     public PlayerWallSlideState wallSlideState { get; private set; }
     public PlayerWallJumpState wallJumpState { get; private set; }
     public PlayerWallHopState wallHopState { get; private set; }
+    public PlayerWallLedgeState wallLedgeState { get; private set; }
     public PlayerPrimaryAttackState primaryAttackState { get; private set; }
     public PlayerHitState hitState { get; private set; }
     public PlayerGuardState guardState { get; private set; }
@@ -24,6 +25,7 @@ public class Player : Entity
     public PlayerThrowSwordState throwSwordState { get; private set; }
     public PlayerCatchSwordState catchSwordState { get; private set; }
     public PlayerUltimateState ultimateState { get; private set; }
+    public PlayerDeadState deadState { get; private set; }
     #endregion
 
     #region Reference
@@ -42,11 +44,11 @@ public class Player : Entity
     public float jumpForce;
     public float movementForceInAir;
     public float airDragMultiplier;
-    [SerializeField] private float jumpHeightMultiplier;
+    public float jumpHeightMultiplier;
     [SerializeField] private float coyoteTime = .2f;
     [SerializeField] private float maxFallSpeed;
 
-    private float coyoteTimeCounter;
+    public float coyoteTimeCounter { get; set; }
 
     [Header("Dash")]
     public float dashSpeed;
@@ -65,6 +67,10 @@ public class Player : Entity
     public float wallHopTime;
     public float wallHopForce;
     public Vector2 wallHopDir;
+
+    [Header("Wall Ledge")]
+    [SerializeField] private Transform wallLedgeCheck;
+    [SerializeField] private Vector2 wallLedgeCheckSize;
 
     [Header("Attack")]
     public float comboTime;
@@ -109,82 +115,29 @@ public class Player : Entity
         jumpState = new PlayerJumpState(this, stateMachine, "Jump");
         fallState = new PlayerFallState(this, stateMachine, "Fall");
         dashState = new PlayerDashState(this, stateMachine, "Dash");
+        guardState = new PlayerGuardState(this, stateMachine, "Guard");
+
         wallSlideState = new PlayerWallSlideState(this, stateMachine, "Wall Slide");
         wallJumpState = new PlayerWallJumpState(this, stateMachine, "Jump");
         wallHopState = new PlayerWallHopState(this, stateMachine, "Jump");
+        wallLedgeState = new PlayerWallLedgeState(this, stateMachine, "WallLedge");
+
         primaryAttackState = new PlayerPrimaryAttackState(this, stateMachine, "Attack");
-        hitState = new PlayerHitState(this, stateMachine, "Hit");
-        guardState = new PlayerGuardState(this, stateMachine, "Guard");
         counterAttackState = new PlayerCounterAttackState(this, stateMachine, "CounterAttack");
+        hitState = new PlayerHitState(this, stateMachine, "Hit");
+
         aimSwordState = new PlayerAimSwordState(this, stateMachine, "AimSword");
         throwSwordState = new PlayerThrowSwordState(this, stateMachine, "ThrowSword");
         waitSwordState = new PlayerWaitSwordState(this, stateMachine, "WaitSword");
         catchSwordState = new PlayerCatchSwordState(this, stateMachine, "CatchSword");
+
         ultimateState = new PlayerUltimateState(this, stateMachine, "Fall");
+
+        deadState = new PlayerDeadState(this, stateMachine, "Dead");
     }
 
 
     #region GameInput
-    private void GameInput_OnSwordSkillPress(object sender, System.EventArgs e)
-    {
-        if (IsCurrentStateEqualTo(primaryAttackState)
-            || IsCurrentStateEqualTo(aimSwordState)
-            || IsCurrentStateEqualTo(throwSwordState)
-            || IsCurrentStateEqualTo(catchSwordState)
-            || IsCurrentStateEqualTo(waitSwordState)
-            || IsCurrentStateEqualTo(ultimateState))
-        {
-            return;
-        }
-
-        if (!SkillManager.instance.swordSkill.IsAllSwordThrown())
-        {
-            aimSwordDirectionInput = Vector2.zero;
-            stateMachine.ChangeState(aimSwordState);
-        }
-        else
-        {
-            stateMachine.ChangeState(waitSwordState);
-        }
-
-    }
-    private void GameInput_OnSwordSkillRelease(object sender, System.EventArgs e)
-    {
-        if (IsCurrentStateEqualTo(aimSwordState))
-        {
-            if (IsAimInputInCancelRange())
-            {
-                stateMachine.ChangeState(catchSwordState);
-            }
-            else
-            {
-                stateMachine.ChangeState(throwSwordState);
-            }
-        }
-    }
-    private void GameInput_OnAttackPress(object sender, System.EventArgs e)
-    {
-        isHoldingAttackButton = true;
-
-        if (IsCurrentStateEqualTo(primaryAttackState)
-            || IsCurrentStateEqualTo(hitState)
-            || IsCurrentStateEqualTo(catchSwordState)
-            || IsCurrentStateEqualTo(throwSwordState)
-            || IsCurrentStateEqualTo(waitSwordState)
-            || IsCurrentStateEqualTo(ultimateState)
-            || IsCurrentStateEqualTo(wallSlideState)
-            )
-        {
-            return;
-        }
-
-
-        stateMachine.ChangeState(primaryAttackState);
-    }
-    private void GameInput_OnAttackRelease(object sender, System.EventArgs e)
-    {
-        isHoldingAttackButton = false;
-    }
     private void GameInput_OnDashPress(object sender, System.EventArgs e)
     {
         if (IsCurrentStateEqualTo(dashState)
@@ -206,77 +159,19 @@ public class Player : Entity
         stateMachine.ChangeState(dashState);
 
     }
-    private void GameInput_OnJumpPress(object sender, System.EventArgs e)
-    {
-        if (IsCurrentStateEqualTo(primaryAttackState)
-            || IsCurrentStateEqualTo(aimSwordState)
-            || IsCurrentStateEqualTo(throwSwordState)
-            || IsCurrentStateEqualTo(catchSwordState)
-            || IsCurrentStateEqualTo(waitSwordState)
-            || IsCurrentStateEqualTo(dashState)
-            || IsCurrentStateEqualTo(ultimateState))
-        {
-            return;
-        }
 
-        if (coyoteTimeCounter > 0)
-        {
-            stateMachine.ChangeState(jumpState);
-        }
-        else if (IsCurrentStateEqualTo(wallSlideState))
-        {
-            stateMachine.ChangeState(wallJumpState); 
-        }
-    }
-    private void GameInput_OnJumpRelease(object sender, System.EventArgs e)
-    {
-        coyoteTimeCounter = 0;
-        rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * jumpHeightMultiplier);
-    }
-    private void GameInput_OnGuardPress(object sender, System.EventArgs e)
-    {
-        if (IsCurrentStateEqualTo(guardState)
-            || IsCurrentStateEqualTo(counterAttackState)
-            || IsCurrentStateEqualTo(hitState)
-            || IsCurrentStateEqualTo(aimSwordState)
-            || IsCurrentStateEqualTo(throwSwordState)
-            || IsCurrentStateEqualTo(catchSwordState)
-            || IsCurrentStateEqualTo(waitSwordState)
-            || IsCurrentStateEqualTo(ultimateState))
-        {
-            return;
-        }
-
-        if(!skillManager.parrySkill.CanUseSkill())
-        {
-            return;
-        }
-
-        if (canGuard)
-        {
-            stateMachine.ChangeState(guardState);
-        }
-    }
     private void GameInput_OnUltimateSkillPress(object sender, System.EventArgs e)
     {
-        if(IsCurrentStateEqualTo(ultimateState))
+        if (IsCurrentStateEqualTo(ultimateState))
         {
             return;
         }
 
-        if(!skillManager.ultimateSkill.CanUseSkill())
+        if (!skillManager.ultimateSkill.CanUseSkill())
         {
             return;
         }
         stateMachine.ChangeState(ultimateState);
-    }
-    private void GameInput_OnCrystalSkillPress(object sender, System.EventArgs e)
-    {
-        
-    }
-    private void GameInput_OnTouchScreen(object sender, System.EventArgs e)
-    {
-        
     }
     #endregion
 
@@ -297,18 +192,8 @@ public class Player : Entity
     {
         gameInput = GameInput.instance;
 
-        gameInput.OnJumpPress += GameInput_OnJumpPress;
-        gameInput.OnJumpRelease += GameInput_OnJumpRelease;
         gameInput.OnDashPress += GameInput_OnDashPress;
-        gameInput.OnAttackPress += GameInput_OnAttackPress;
-        gameInput.OnAttackRelease += GameInput_OnAttackRelease;
-        gameInput.OnGuardPress += GameInput_OnGuardPress;
-        gameInput.OnSwordSkillPress += GameInput_OnSwordSkillPress;
-        gameInput.OnSwordSkillRelease += GameInput_OnSwordSkillRelease;
         gameInput.OnUltimateSkillPress += GameInput_OnUltimateSkillPress;
-        gameInput.OnCrystalSkillPress += GameInput_OnCrystalSkillPress;
-
-        gameInput.OnTouchScreen += GameInput_OnTouchScreen;
     }
 
 
@@ -342,7 +227,6 @@ public class Player : Entity
         if (gameInput.GetAimDirectionInput() != Vector2.zero)
         {
             aimSwordDirectionInput = gameInput.GetAimDirectionInput();
-            FaceTo(aimSwordDirectionInput.x);
         }
     }
 
@@ -410,5 +294,67 @@ public class Player : Entity
     {
         return Mathf.Abs(aimSwordDirectionInput.x) <= cancelAimInputRange
             && Mathf.Abs(aimSwordDirectionInput.y) <= cancelAimInputRange;
+    }
+
+    public override void Die()
+    {
+        base.Die();
+
+        stateMachine.ChangeState(deadState);
+    }
+
+    public bool IsTouchingWallLedge()
+    {
+        return Physics2D.BoxCast(wallLedgeCheck.position, wallLedgeCheckSize, 0, transform.right, 0, groundLayer);
+    }
+
+    public bool CanWallLedge()
+    {
+        return IsTouchingWall() && !IsTouchingWallLedge();
+    }
+
+    protected override void OnDrawGizmos()
+    {
+        base.OnDrawGizmos();
+
+        Gizmos.DrawWireCube(wallLedgeCheck.position, wallLedgeCheckSize);
+    }
+
+    public void OnSwordSkillPress()
+    {
+        if (!SkillManager.instance.swordSkill.IsAllSwordThrown())
+        {
+            aimSwordDirectionInput = Vector2.zero;
+            stateMachine.ChangeState(aimSwordState);
+        }
+        else
+        {
+            stateMachine.ChangeState(waitSwordState);
+        }
+    }
+
+    public void OnSwordSkillRelease()
+    {
+        if (IsAimInputInCancelRange())
+        {
+            stateMachine.ChangeState(catchSwordState);
+        }
+        else
+        {
+            stateMachine.ChangeState(throwSwordState);
+        }
+    }
+
+    public void OnGuardPress()
+    {
+        if (!skillManager.parrySkill.CanUseSkill())
+        {
+            return;
+        }
+
+        if (canGuard)
+        {
+            stateMachine.ChangeState(guardState);
+        }
     }
 }

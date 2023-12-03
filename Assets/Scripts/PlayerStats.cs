@@ -6,5 +6,17 @@ public class PlayerStats : EntityStats
 {
     private Player player;
 
+    protected override void Start()
+    {
+        base.Start();
 
+        player = GetComponent<Player>();
+    }
+
+    protected override void Die()
+    {
+        base.Die();
+
+        player.Die();
+    }
 }

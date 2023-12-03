@@ -22,7 +22,6 @@ public class PlayerAnimationTrigger : EntityAnimationTrigger
                 Enemy enemy = hit.GetComponent<Enemy>();
                 
                 enemy.ChangeToStunState();
-                Utilities.DealKnockback(player.transform.position, enemy, player.counterAttackKnockbackDir, player.counterAttackKnockbackForce);
                 player.stats.DealDamageTo(enemy);
             
             }

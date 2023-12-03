@@ -10,6 +10,9 @@ public class ButtonManager : MonoBehaviour
     [SerializeField] protected CanvasGroup ultimateButtonCanvasGroup;
     [SerializeField] protected CanvasGroup swordSkillButtonCanvasGroup;
 
+    private GameInput gameInput;
+    public bool isHoldingAttackButton { get; private set; }
+
     private void Awake()
     {
         if(instance == null)
@@ -25,6 +28,20 @@ public class ButtonManager : MonoBehaviour
     private void Start()
     {
         swordSkillButton = GetComponent<SwordSkillButton>();
+        gameInput = GameInput.instance;
+
+        gameInput.OnAttackPress += GameInput_OnAttackPress;
+        gameInput.OnAttackRelease += GameInput_OnAttackRelease;
+    }
+
+    private void GameInput_OnAttackRelease(object sender, System.EventArgs e)
+    {
+        isHoldingAttackButton = false;
+    }
+
+    private void GameInput_OnAttackPress(object sender, System.EventArgs e)
+    {
+        isHoldingAttackButton = true;
     }
 
     //Do not use in update

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.InputSystem.OnScreen;
 
-public class SwordSkillButton : InputButton
+public class SwordSkillButton : MonoBehaviour
 {
     [SerializeField] private GameObject swordSkillJoyStick;
     [SerializeField] private GameObject joystickBackground;

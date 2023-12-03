@@ -119,4 +119,11 @@ public class Enemy : Entity
     {
         StartCoroutine(FreezeTimeCo(seconds));
     }
+
+    public override void Die()
+    {
+        base.Die();
+
+        Debug.Log("Die Enemy");
+    }
 }

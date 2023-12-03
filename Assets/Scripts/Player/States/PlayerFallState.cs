@@ -11,11 +11,21 @@ public class PlayerFallState : PlayerAirState
     public override void Enter()
     {
         base.Enter();
+        gameInput.OnJumpPress += GameInput_OnJumpPress;
+    }
+
+    private void GameInput_OnJumpPress(object sender, System.EventArgs e)
+    {
+        if (player.coyoteTimeCounter > 0)
+        {
+            stateMachine.ChangeState(player.jumpState);
+        }
     }
 
     public override void Exit()
     {
         base.Exit();
+        gameInput.OnJumpPress -= GameInput_OnJumpPress;
     }
 
     public override void Update()
@@ -27,7 +37,11 @@ public class PlayerFallState : PlayerAirState
             stateMachine.ChangeState(player.idleState);
         }
 
-        if (player.IsTouchingWall() && !player.IsGrounded() && stateMachine.currentState != player.wallHopState)
+        if(player.CanWallLedge())
+        {
+            stateMachine.ChangeState(player.wallLedgeState);
+        }
+        else if (player.IsTouchingWall() && !player.IsGrounded() && stateMachine.currentState != player.wallHopState)
         {
             stateMachine.ChangeState(player.wallSlideState);
         }

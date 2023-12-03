@@ -2,19 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerWallSlideState : PlayerState
+public class PlayerWallLedgeState : PlayerState
 {
-    private float wallSlideHoldTime;
-
-    public PlayerWallSlideState(Player player, StateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
+    public PlayerWallLedgeState(Player player, StateMachine stateMachine, string animBoolName) : base(player, stateMachine, animBoolName)
     {
     }
 
     public override void Enter()
     {
         base.Enter();
-
-        wallSlideHoldTime = player.wallSlideHoldTime;
+        gameInput = GameInput.instance;
         gameInput.OnJumpPress += GameInput_OnJumpPress;
         gameInput.OnSwordSkillPress += GameInput_OnSwordSkillPress;
         gameInput.OnSwordSkillRelease += GameInput_OnSwordSkillRelease;
@@ -32,57 +29,40 @@ public class PlayerWallSlideState : PlayerState
 
     private void GameInput_OnJumpPress(object sender, System.EventArgs e)
     {
-        stateMachine.ChangeState(player.wallJumpState);
+        stateMachine.ChangeState(player.jumpState);
     }
 
     public override void Exit()
     {
         base.Exit();
+
+        player.rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         gameInput.OnJumpPress -= GameInput_OnJumpPress;
         gameInput.OnSwordSkillPress -= GameInput_OnSwordSkillPress;
         gameInput.OnSwordSkillRelease -= GameInput_OnSwordSkillRelease;
+    }
+
+    public override void FixedUpdate()
+    {
+        base.FixedUpdate();
     }
 
     public override void Update()
     {
         base.Update();
 
-        if(player.CanWallLedge())
+        if (player.IsTouchingWallLedge())
         {
-            stateMachine.ChangeState(player.wallLedgeState);
+            player.rb.constraints = RigidbodyConstraints2D.FreezePosition;
         }
 
-        if (player.yInput < 0)
+        if (player.xInput != 0)
         {
-            player.SetVelocity(0, player.rb.velocity.y);
-        }
-        else
-        {
-            player.SetVelocity(0, -player.wallSlideSpeed);
-        }
-
-        if (player.xInput != player.transform.right.x)
-        {
-            wallSlideHoldTime -= Time.deltaTime;
-            if(wallSlideHoldTime <= 0)
+            if (player.xInput * player.transform.right.x < 0)
             {
-                wallSlideHoldTime = player.wallSlideHoldTime;
                 stateMachine.ChangeState(player.wallHopState);
             }
         }
-        else
-        {
-            wallSlideHoldTime = player.wallSlideHoldTime;
-        }
-
-
-        if (!player.IsTouchingWall())
-        {
-            stateMachine.ChangeState(player.fallState);
-        }
-        if (player.IsGrounded())
-        {
-            stateMachine.ChangeState(player.idleState);
-        }
     }
+
 }

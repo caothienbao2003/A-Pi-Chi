@@ -76,6 +76,7 @@ public class Entity : MonoBehaviour
 
         //Draw Wall Check
         Gizmos.DrawWireCube(wallCheck.position, wallCheckSize);
+
         //Draw Attack Check
         Gizmos.DrawWireSphere(attackCheck.position, attackCheckRadius);
     }
@@ -141,5 +142,10 @@ public class Entity : MonoBehaviour
     public virtual void AddAForce(Vector2 moveDir, float force)
     {
         rb.AddForce(moveDir * force, ForceMode2D.Impulse);
+    }
+
+    public virtual void Die()
+    {
+    
     }
 }

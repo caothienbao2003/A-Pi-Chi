@@ -25,8 +25,6 @@ public class EntityAnimationTrigger : MonoBehaviour
                 Entity attackingEntity = GetComponentInParent<Entity>();
                 
                 attackedEntity.ChangeToHitState();
-                attackingEntity.DealKnockbackTo(attackedEntity);
-
                 attackingEntity.stats.DealDamageTo(attackedEntity);
             }
         }
